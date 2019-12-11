@@ -1,3 +1,4 @@
+require('./TableRow.less');
 var React = require('react');
 var ReactDOM = require('react-dom');
 
@@ -144,7 +145,7 @@ module.exports = React.createClass({
 				}else {
 					if(_type == 'checkbox'){
 						_value = _value==undefined ? this.props.checked : _value;
-						_content = this.state.editable?<zn.react.Icon icon="fa-edit" />:<zn.react.Checkbox onChange={this.__onCheckBoxChange} checked={_value} />;
+						_content = this.state.editable?<znui.react.Icon icon="fa-edit" />:<znui.react.Checkbox onChange={this.__onCheckBoxChange} checked={_value} />;
 					}else {
 						if(zn.path(window, _type)){
 							_input = zn.path(window, _type);
@@ -158,13 +159,13 @@ module.exports = React.createClass({
 			}
 
 			if(!_content){
-				var _Input = _input || zn.react.Input;
+				var _Input = _input || znui.react.Input;
 				if(item.props && item.props[0] == '{'){
 					item.attrs = JSON.parse(item.props);
 				}
 				_content = <span>{_value}</span>;
 				if(this.state.editable){
-					if(_Input==zn.react.Input){
+					if(_Input == znui.react.Input){
 						_content = <_Input {...item} value={_value} text={_value} onBlur={(value, input, event)=>this.__onTableColumnChange(this.props.index, index, value, input, event, item)} />;
 					}else {
 						_content = <_Input {...item} value={_value} text={_value} onChange={(value, input, event)=>this.__onTableColumnChange(this.props.index, index, value, input, event, item)} />;
@@ -177,7 +178,7 @@ module.exports = React.createClass({
 	},
 	render:function(){
 		return (
-			<tr style={this.props.style} className={"table-row " + (this.state.editable?'editable':'') + " " + (this.state.selected?'selected':'')} onClick={this.__onRowClick}>
+			<tr style={this.props.style} className={"znui-react-table-row " + (this.state.editable?'editable':'') + " " + (this.state.selected?'selected':'')} onClick={this.__onRowClick}>
 				{
 					(this.props.items||[]).map(this.__columnRender)
 				}

@@ -1,3 +1,4 @@
+require('./TableFilter.less');
 var React = require('react');
 
 module.exports = React.createClass({
@@ -16,11 +17,24 @@ module.exports = React.createClass({
 	componentDidMount:function(){
 		this.search(this.props.filterData);
 	},
-	__onFilter: function (){
-		this.search(this.props.filterData);
-	},
 	search: function (data){
 		data && this.props.onFilterSearch(data, this);
+	},
+	validate: function (){
+		var _value = {}, _ref = null;
+		for(var key in this.refs){
+			_ref = this.refs[key];
+			//if(item.state.opt && item.validate()){
+
+			if(_ref.state.opt){
+				_value[key.split('_convert')[0]] = {
+					opt: _ref.state.opt,
+					value: _ref.validate()
+				};
+			}
+		}
+
+		return _value;
 	},
 	__onFilterChange: function (value, item){
 		if(this.props.filterData[item.name]){
@@ -47,21 +61,8 @@ module.exports = React.createClass({
 	__onFilterItemChange: function (value, input){
 		this.props.onFilter && this.props.onFilter(this.validate(), input);
 	},
-	validate: function (){
-		var _value = {}, _ref = null;
-		for(var key in this.refs){
-			_ref = this.refs[key];
-			//if(item.state.opt && item.validate()){
-
-			if(_ref.state.opt){
-				_value[key.split('_convert')[0]] = {
-					opt: _ref.state.opt,
-					value: _ref.validate()
-				};
-			}
-		}
-
-		return _value;
+	__onFilter: function (){
+		this.search(this.props.filterData);
 	},
 	__onFilterItemCancle: function (){
 		this.props.onFilter && this.props.onFilter(this.validate());

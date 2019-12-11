@@ -1,0 +1,142 @@
+/*
+ * Table
+ */
+.znui-react-table {
+  width: 100%;
+  /*border: 1px solid @table-base-color;*/
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background-color: #FFF;
+  /*background-color: #a5a5a566;*/
+}
+.znui-react-table[data-fixed="true"] {
+  width: 100%;
+}
+.znui-react-table[data-fixed="true"] > thead,
+.znui-react-table[data-fixed="true"] > tbody {
+  position: absolute;
+  display: inherit;
+  right: 0px;
+  width: 100%;
+  left: 0px;
+}
+.znui-react-table[data-fixed="true"] > thead {
+  top: 0px;
+  height: 100px;
+}
+.znui-react-table[data-fixed="true"] > tbody {
+  top: 100px;
+  bottom: 0px;
+}
+.znui-react-table-header {
+  display: table-header-group;
+  vertical-align: middle;
+  color: #6a6a6a;
+  font-size: 14px;
+}
+.znui-react-table-header > .thead {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+.znui-react-table-header > .table-row > th {
+  border-left: 1px solid #e6e6e6;
+  border-top: 1px solid #e6e6e6;
+  /*padding: 4px 6px;*/
+}
+.znui-react-table-header > .table-row > th:first-child {
+  border-left: 0px;
+}
+.znui-react-table-header > .table-row > th .sort {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin: 10px 5px;
+  cursor: pointer;
+}
+.znui-react-table-body {
+  /*background-color: @table-tbody-bg-color;*/
+  /*background-color: #f5f5f5;*/
+}
+.znui-react-table-body > .table-row {
+  font-size: 12px;
+  cursor: pointer;
+}
+.znui-react-table-body > .table-row:nth-child(odd) {
+  /*background-color: rgba(255, 255, 255, 0.1);*/
+  background-color: #f9f9f9;
+}
+.znui-react-table-body > .table-row.selected {
+  /*border-left: 5px solid #0b72a5;*/
+  color: #0b72a5;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.znui-react-table-body > .table-row:hover {
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  color: #59a5c9;
+  /*
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);*/
+}
+.znui-react-table-row {
+  line-height: 24px;
+  border-bottom: 1px solid #e6e6e6;
+  border-left: 1px solid #e6e6e6;
+  border-right: 1px solid #e6e6e6;
+}
+.znui-react-table-row.editable {
+  color: #374047;
+  height: 30px;
+  background-color: rgba(226, 226, 226, 0.2);
+}
+.znui-react-table-row.editable > td,
+.znui-react-table-row.editable > th {
+  border: none;
+  padding: 0px;
+  margin: 0px;
+  border-bottom: 1px solid #e6e6e6;
+  border-left: 1px solid #e6e6e6;
+  overflow: visible;
+  line-height: 0px;
+}
+.znui-react-table-row.editable > td:first-child,
+.znui-react-table-row.editable > th:first-child {
+  border-left: 0px;
+}
+.znui-react-table-row.editable .zr-select,
+.znui-react-table-row.editable .zr-input {
+  width: 100%;
+  border: none;
+  font-size: 12px;
+}
+.znui-react-table-row.filter .filter-dropdown {
+  margin: 2px;
+  margin-top: 6px;
+  background-color: #e4e2e2;
+  color: #8c8686;
+}
+.znui-react-table-row.filter .filter-dropdown:hover {
+  background-color: #c5c3c3;
+}
+.znui-react-table-row > th,
+.znui-react-table-row > td {
+  position: relative;
+  border: none;
+  border-left: 1px solid #e6e6e6;
+  text-align: left;
+  padding: 0px 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+.znui-react-table-row > th.text-align-right,
+.znui-react-table-row > td.text-align-right {
+  text-align: right !important;
+}
+.znui-react-table-row > th.text-align-center,
+.znui-react-table-row > td.text-align-center {
+  text-align: center !important;
+}
+.znui-react-table-row > th.text-align-left,
+.znui-react-table-row > td.text-align-left {
+  text-align: left !important;
+}

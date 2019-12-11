@@ -83,21 +83,23 @@ module.exports = React.createClass({
 				width: this.props.checkbox
 			});
 		}
-		this._columnSize = _items.length;
 		return (
-			<table style={this.props.style} className={"zr-table " + this.props.className} data-fixed={this.props.fixed} cellPadding="0" cellSpacing="0">
+			<table style={this.props.style} 
+				className={znui.react.classname("znui-react-table", this.props.className)} 
+				data-fixed={this.props.fixed} 
+				cellPadding="0" 
+				cellSpacing="0">
 				<TableColgroup {...this.props} items={_items} />
 				{this.props.showHeader && <TableHeader
 					{...this.props}
 					items={_items}
-					columnSize={this._columnSize}
+					columnSize={_items.length}
 					onCheckBoxChange={this.__onHeaderCheckBoxChange}
 					onFilter={this.__onFilter}/>}
-				<TableBody
-					ref="body"
+				<TableBody ref="body"
 					{...this.props}
 					items={_items}
-					columnSize={this._columnSize}
+					columnSize={_items.length}
 					onCheckBoxChange={this.__onBodyCheckBoxChange}/>
 			</table>
 		);

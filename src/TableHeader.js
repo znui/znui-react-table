@@ -1,3 +1,4 @@
+require('./TableHeader.less');
 var React = require('react');
 var TableFilter = require('./TableFilter');
 
@@ -22,7 +23,7 @@ module.exports = React.createClass({
 		if(!_content){
 			switch (item.type) {
 				case 'checkbox':
-					_content = <zn.react.Checkbox {...item} onChange={this.__onCheckBoxChange} />;
+					_content = <znui.react.Checkbox {...item} onChange={this.__onCheckBoxChange} />;
 					break;
 				default:
 					_content = <div onClick={()=>this.__onColClick(item, index)}>
@@ -41,8 +42,8 @@ module.exports = React.createClass({
 	},
 	render:function(){
 		return (
-			<thead>
-				<tr className="table-row thead">
+			<thead className={znui.react.classname("znui-react-table-header", this.props.theadClassName)}>
+				<tr className="table-row">
 					{
 						(this.props.items||[]).map(this.__itemRender)
 					}

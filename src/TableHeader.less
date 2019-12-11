@@ -1,0 +1,27 @@
+@table-thead-font-color: #6a6a6a;
+.znui-react-table-header{
+    display: table-header-group;
+    vertical-align: middle;
+    color: @table-thead-font-color;
+    font-size: 14px;
+    &>.thead{
+        background-color: rgba(255, 255, 255, 0.6);
+    }
+    &>.table-row{
+        &>th{
+            border-left: 1px solid rgb(230, 230, 230);
+            border-top: 1px solid rgb(230, 230, 230);
+            /*padding: 4px 6px;*/
+            &:first-child{
+                border-left: 0px;
+            }
+            .sort{
+                position: absolute;
+                top: 0px;
+                right: 0px;
+                margin: 10px 5px;
+                cursor: pointer;
+            }
+        }
+    }
+}

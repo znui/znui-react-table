@@ -1,5 +1,7 @@
+require('./TableBody.less');
 var React = require('react');
 var TableRow = require('./TableRow');
+var axios = require('axios');
 
 var TableBody = React.createClass({
 	displayName:'TableBody',
@@ -13,29 +15,19 @@ var TableBody = React.createClass({
 		}
 	},
 	componentDidMount:function(){
-		if(this.props.data && this.props.data.on){
-			var _self = this;
-			this.props.data.on('before', function (){
-				if(_self.props.showLoading){
-					zn.preloader.open({title: '加载中...'});
-				}
-			}).on('complete', function (){
-				if(_self.props.showLoading){
-					zn.preloader.close();
-				}
-			});
-		}
-		this._dataSource = Store.dataSource(this.props.data, {
-			autoLoad: this.props.autoLoad||true,
-			onExec: ()=>this.setState({loading: true}),
-			onSuccess: function (data){
-				this.__onDataLoaded(this.dataHandler(data));
-				this.props.onData && this.props.onData(data);
-			}.bind(this)
-		});
+		this.setData(this.props.data);
 	},
-	componentWillUnmount: function (){
-
+	setData: function (data){
+		var _type = Object.prototype.toString.call(data);
+		if(_type == '[object Array]') {
+			this.__onDataLoaded(this.dataHandler(data));
+		}else if(_type == '[object Object]'){
+			this.setState({ loading: true });
+			axios(data).then(function (value){
+				this.setState({ loading: false });
+				this.__onDataLoaded(this.dataHandler(value));
+			}.bind(this));
+		}
 	},
 	dataHandler: function (data){
 		if(this.props.dataHandler){
@@ -46,17 +38,14 @@ var TableBody = React.createClass({
 	},
 	componentWillReceiveProps: function(nextProps){
 		if(nextProps.data!==this.props.data){
-			this._dataSource.reset(nextProps.data);
+			this.setData(nextProps.data);
 		}
 	},
-	request: function (data, argv){
-		this._dataSource.reset(data, argv);
+	request: function (data){
+		this.setData(data);
 	},
 	refresh: function (){
-		this._dataSource.refresh();
-	},
-	setData: function (data, argv){
-		this._dataSource.reset(data, argv);
+		this.setData(this.props.data);
 	},
 	getData: function (){
 		return this.state.data;
@@ -112,6 +101,7 @@ var TableBody = React.createClass({
 		}
 	},
 	__onDataLoaded: function (data){
+		this.props.onData && this.props.onData(data);
 		if(!this.isMounted()){
 			return false;
 		}
@@ -151,14 +141,14 @@ var TableBody = React.createClass({
 			return <tbody>
 				<tr style={{ position: 'relative', height: 180 }}>
 					<td style={{position:'absolute', width: '100%'}}>
-						<zn.react.DataLoader style={{width: 100}} loader="arrow-circle" content="Loading ......" />
+						<znui.react.DataLoader style={{width: 100}} loader="arrow-circle" content="Loading ......" />
 					</td>
 				</tr>
 			</tbody>;
 		}
 		this.state.values = [];
 		return (
-			<tbody style={this.props.tbodyStyle}>
+			<tbody className={znui.react.classname("znui-react-table-body", this.props.tbodyClassName)} style={this.props.tbodyStyle}>
 				{
 					this.state.data && this.state.data.map && this.state.data.map(function (item, index){
 						var _result = this.props.onRowRender && this.props.onRowRender(item, index, this.state.data.length);

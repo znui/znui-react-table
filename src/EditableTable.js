@@ -1,4 +1,8 @@
+require('./EditableTable.less');
 var React = require('react');
+var Table = require('./Table');
+var ReactFA = require('@fortawesome/react-fontawesome');
+var ReactSVGIcons = require('@fortawesome/free-solid-svg-icons');
 module.exports = React.createClass({
 	getDefaultProps: function (){
 		return {
@@ -37,17 +41,17 @@ module.exports = React.createClass({
 	__tableHeaderRender: function (item, index, columnSize){
 		if(index == 0){
 			return <div style={{textAlign: 'center'}}>
-				<zn.react.Icon tooltip='Add Row(Insert Last Row)' icon="fa-plus" onClick={this.__onRowAdd} />
+				<ReactFA.FontAwesomeIcon icon={ReactSVGIcons.faPlus} onClick={this.__onRowAdd} />
 			</div>;
 		}
 	},
 	__tableColumnRender: function (rowIndex, columnIndex, data, item, value){
 		if(item.type == "action"){
 			return <div style={{textAlign: 'center'}}>
-				<zn.react.Icon tooltip="Delete Row(Delete This Row)" icon="fa-minus" onClick={()=>this.__onRowDelete(rowIndex, columnIndex, data, item, value)} />
+				<ReactFA.FontAwesomeIcon icon={ReactSVGIcons.faMinus} onClick={()=>this.__onRowDelete(rowIndex, columnIndex, data, item, value)} />
 				{
 					/*
-						<zn.react.Icon title="Append Row(Append To This Row Before)" icon="fa-plus" onClick={()=>this.__onRowAppend(rowIndex, columnIndex, data, item, value)} />
+						<ReactFA.FontAwesomeIcon icon={ReactSVGIcons.faPlus} onClick={()=>this.__onRowAppend(rowIndex, columnIndex, data, item, value)} />
 					*/
 				}
 			</div>;
@@ -55,16 +59,16 @@ module.exports = React.createClass({
 	},
 	render: function(){
 		return (
-			<zn.react.Table
-				ref="dstable"
-				{...this.props}
+			<Table {...this.props} className={"znui-react-table " + (this.props.className||'')} ref="dstable"
 				singleSelect={false}
 				editable={true}
 				enableFilter={false}
 				checkbox={false}
 				showHeader={true}
-				items={[{ title: 'Actions', name: 'Actions', type: 'action', width: 50, textAlign: 'center' }].concat(this.props.headers)}
 				data={this.props.data}
+				items={[
+					{ title: 'Actions', name: 'Actions', type: 'action', width: 50, textAlign: 'center' }
+				].concat(this.props.headers)}
 				headerRender={this.__tableHeaderRender}
 				columnRender={this.__tableColumnRender}/>
 		);
