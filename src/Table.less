@@ -1,37 +1,19 @@
-/*
- * Table
- */
-@table-base-color: rgb(230, 230, 230);
-@table-thead-font-color: #6a6a6a;
-@table-thead-bg-color: #FFFFFF;
-@table-tbody-bg-color: #FFFFFF;
-@table-filter-bg-color: #FFFFFF;
-@table-editable-bg-color: #FFFFFF;
-
-.znui-react-table {
-    width: 100%;
-    /*border: 1px solid @table-base-color;*/
-    table-layout: fixed;
+.zr-table {
     border-collapse: collapse;
     border-spacing: 0;
-    background-color: #FFF;
-    /*background-color: #a5a5a566;*/
     &[data-fixed="true"]{
-        width: 100%;
-        &>thead, &>tbody{
-            position: absolute;
-            display: inherit;
-            right: 0px;
-            width: 100%;
-            left: 0px;
+        table-layout: fixed;
+        &>thead, &>tbody, &>tfoot{
+            
         }
         &>thead{
-            top: 0px;
-            height: 100px;
+            
         }
         &>tbody{
-            top: 100px;
-            bottom: 0px;
+            
+        }
+        &>tfoot{
+            
         }
     }
 }

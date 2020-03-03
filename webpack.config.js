@@ -17,15 +17,17 @@ if(uglifyIndex!=-1){
 
 module.exports = {
     context: path.join(process.cwd(), 'src'),
-    mode: process.env.NODE_ENV || 'production',
+    mode: 'production',
     entry: {
-        "index": "./index.js"
+        "index": "./index.js",
+        "index.style": "./index.less"
     },
-    /*
     externals: {
         "react": "React",
-        "react-dom": "ReactDOM"
-    },*/
+        "react-dom": "ReactDOM",
+        "znui-react": "zr",
+        "znui-react-icon": "zri"
+    },
     output: {
         path: path.join(process.cwd(), 'dist'),
         //chunkFilename: '[name].js',

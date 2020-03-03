@@ -1,0 +1,21 @@
+.zr-table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    &[data-fixed="true"]{
+        display: flex;
+        flex-direction: column;
+        table-layout: fixed;
+        &>thead, &>tbody, &>tfoot{
+            width: 100%;
+        }
+        &>thead{
+            height: 100px;
+        }
+        &>tbody{
+            flex: 1;
+        }
+        &>tfoot{
+            height: 30px;
+        }
+    }
+}

@@ -17,7 +17,8 @@ if(uglifyIndex!=-1){
 
 module.exports = {
     context: path.join(process.cwd(), 'example'),
-    mode: process.env.NODE_ENV || 'production',
+    mode: 'development',
+    devtool: 'source-map',
     entry: {
         "example": "./index.js"
     },
@@ -28,6 +29,18 @@ module.exports = {
         //library: "friendly",
         //libraryTarget: "this"
         //libraryExport: "default"
+    },
+    resolve: {
+        alias: {
+            "znui-react": path.resolve(__dirname, '../znui-react'),
+            "znui-react-input": path.resolve(__dirname, '../znui-react-input'),
+            "znui-react-filter": path.resolve(__dirname, '../znui-react-filter'),
+            "znui-react-loader": path.resolve(__dirname, '../znui-react-loader'),
+            "znui-react-pager": path.resolve(__dirname, '../znui-react-pager'),
+            "znui-react-popup": path.resolve(__dirname, '../znui-react-popup'),
+            "znui-react-selector": path.resolve(__dirname, '../znui-react-selector'),
+            "rt-json-editor": path.resolve(__dirname, '../../rt/rt-json-editor')
+        }
     },
     module: {
         // Disable handling of unknown requires

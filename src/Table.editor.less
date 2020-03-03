@@ -1,0 +1,95 @@
+@thead-background-color: rgba(255, 255, 255, 0.6);;
+@thead-font-color: #676767;
+@thead-border-color: #e6e6e6;
+@trow-clicked-color: #3498db;
+.zr-table.zr-table-class-editor {
+    background-color: #FFF;
+    border: 1px solid @thead-border-color;
+    border-collapse: collapse;
+    .zr-table-thead{
+        display: table-header-group;
+        vertical-align: middle;
+        font-size: 14px;
+        color: @thead-font-color;
+        background-color: @thead-background-color;
+        th{
+            position: relative;
+            border: 1px solid @thead-border-color;
+            .cell-sort{
+                position: absolute;
+                top: 0px;
+                right: 0px;
+                margin: 10px 5px;
+                cursor: pointer;
+            }
+        }
+        
+    }
+
+    .zr-table-tfilter{
+        background-color: #fbf0f0;
+        tr{
+            position: relative;
+            td{
+                border: 1px solid @thead-border-color;
+            }
+        }
+    }
+    .zr-table-tbody{
+        &>.zr-table-trow {
+            font-size: 12px;
+            cursor: pointer;
+            //nth-child: odd, even
+            &:nth-child(odd){
+                background-color: #f9f9f9;
+            }
+            &[data-active="true"]{
+                color: @trow-clicked-color !important;
+            }
+            &:hover{
+                color: #59a5c9;
+                background-color: rgba(255, 255, 255, 0.4);
+            }
+        }
+    }
+    .zr-table-tfoot{
+        tr{
+            position: relative;
+            td{
+                border: 1px solid @thead-border-color;
+            }
+        }
+    }
+    .zr-table-trow{
+        &>th, &>td{
+            position: relative;
+            border: none;
+            border: 1px solid @thead-border-color;
+            text-align: left;
+            padding: 0px;
+            margin: 0px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+            .zr-input, input, select, textarea {
+                width: 100%;
+                height: 30px;
+                line-height: 30px;
+                border: none;
+                &:focus{
+                    background-color: #faf0ef !important;
+                }
+            }
+            &.text-align-right{
+                text-align: right !important;
+            }
+            &.text-align-center{
+                text-align: center !important;
+            }
+            &.text-align-left{
+                text-align: left !important;
+            }
+        }
+    }
+}

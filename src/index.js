@@ -1,4 +1,7 @@
+require('znui-react');
 module.exports = {
-    'Table': require('./Table'),
-    'EditableTable': require('./EditableTable')
+    table: require('./table/index'),
+    cell: require('./cell/index'),
+    Table: require('./Table'),
+    TableEditor: require('./TableEditor')
 };
