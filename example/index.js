@@ -12,7 +12,8 @@ var _items = [
         name: 'page', 
         width: 220, 
         body: function (argv){
-            return <input.Input value={argv.value} />;
+            console.log(argv.value);
+            return <input.Input key={argv.value} value={argv.value} />;
         }
     },
     { 
@@ -87,6 +88,7 @@ var _table1 = {
 ReactDOM.render(
     <div className="container">
         <table.Table {..._table} />
+        <table.TableEditor {..._table} />
     </div>,
     document.getElementById('container'),
 );

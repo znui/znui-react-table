@@ -33,9 +33,6 @@ module.exports = React.createClass({
 				onChange={(data, child, root)=>this.__onColumnEditorChange(data, child, root, index)} />
 		</div>;
 	},
-	__renderCellDefault: function (){
-
-	},
 	__renderCell: function (column, index){
 		if(!zn.is(column, 'object')) { return null; }
 		var _element = znui.react.createReactElement(this.props.cellRender, {

@@ -683,9 +683,6 @@ span.CodeMirror-selectedtext { background: none; }
 .zr-table.zr-table-class-editor .zr-table-tfilter tr {
   position: relative;
 }
-.zr-table.zr-table-class-editor .zr-table-tfilter tr td {
-  border: 1px solid #e6e6e6;
-}
 .zr-table.zr-table-class-editor .zr-table-tbody > .zr-table-trow {
   font-size: 12px;
   cursor: pointer;
@@ -731,6 +728,7 @@ span.CodeMirror-selectedtext { background: none; }
   height: 30px;
   line-height: 30px;
   border: none;
+  background-color: transparent !important;
 }
 .zr-table.zr-table-class-editor .zr-table-trow > th .zr-input:focus,
 .zr-table.zr-table-class-editor .zr-table-trow > td .zr-input:focus,
@@ -740,7 +738,7 @@ span.CodeMirror-selectedtext { background: none; }
 .zr-table.zr-table-class-editor .zr-table-trow > td select:focus,
 .zr-table.zr-table-class-editor .zr-table-trow > th textarea:focus,
 .zr-table.zr-table-class-editor .zr-table-trow > td textarea:focus {
-  background-color: #faf0ef !important;
+  background-color: #f7f1f0 !important;
 }
 .zr-table.zr-table-class-editor .zr-table-trow > th.text-align-right,
 .zr-table.zr-table-class-editor .zr-table-trow > td.text-align-right {

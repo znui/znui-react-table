@@ -61,7 +61,7 @@ module.exports = React.createClass({
 	__render: function (){
 		var columns = this.state.columns;
 		return (
-			<table className={znui.react.classname("zr-table-editor", this.props.className)} 
+			<table className={znui.react.classname("zr-table zr-table-editor", this.props.className)} 
 				style={this.props.style} 
 				data-fixed={this.props.fixed} 	
 				cellPadding={this.props.cellPadding || 0} 
@@ -128,6 +128,9 @@ module.exports = React.createClass({
 	__columnsLoaded: function (columns){
 		var _columns = [].concat(columns);
 		this.__initCheckbox(_columns);
+		_columns = _columns.forEach(function (column, index){
+			console.log(column, index);
+		});
 		this.setState({ columns: _columns });
 	},
 	render: function(){
