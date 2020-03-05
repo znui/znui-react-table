@@ -1,6 +1,6 @@
 var React = znui.React || require('react');
-var DataLifecycle = require('./DataLifecycle');
 var table = require('./table/index');
+var input = require('znui-react-input');
 var selector = require('znui-react-selector');
 
 module.exports = React.createClass({
@@ -61,7 +61,7 @@ module.exports = React.createClass({
 	__render: function (){
 		var columns = this.state.columns;
 		return (
-			<table className={znui.react.classname("zr-table zr-table-editor", this.props.className)} 
+			<table className={znui.react.classname("zr-table-editor", this.props.className)} 
 				style={this.props.style} 
 				data-fixed={this.props.fixed} 	
 				cellPadding={this.props.cellPadding || 0} 
@@ -70,7 +70,7 @@ module.exports = React.createClass({
 				{ !!this.props.colgroup && <table.Colgroup columns={columns} {...this.props.colgroup} /> }
 				{ !!this.props.thead && <table.THead onSort={this.__onSort}  onColumnChange={this.__onTHeadColumnChange} columns={columns} {...this.props.thead} table={this} />}
 				{ !!this.props.tfilter && <table.TFilter onFilter={this.__onFilter} columns={columns} {...this.props.filter} table={this} />}
-				{ !!this.props.tbody && <DataLifecycle onFinished={this.__tbodyDataLoaded} data={this.props.data || this.props.tbody.data} render={()=>this.__tbodyDataRender(columns)} onLoading={()=>this.__tbodyLoadingRender(columns)} />}
+				{ !!this.props.tbody && <znui.react.DataLifecycle onFinished={this.__tbodyDataLoaded} data={this.props.data || this.props.tbody.data} render={()=>this.__tbodyDataRender(columns)} onLoading={()=>this.__tbodyLoadingRender(columns)} />}
 				{ !!this.props.tfoot && <table.TFoot columns={columns} {...this.props.tfoot} table={this} />}
 			</table>
 		);
@@ -125,15 +125,27 @@ module.exports = React.createClass({
 			columns = columns.unshift(_checkbox);
 		}
 	},
+	__cellChange: function (event, argv){
+		//console.log(event);
+		//console.log(argv);
+		argv.data[argv.tcell.props.name] = event.value;
+		argv.trow.forceUpdate();
+	},
+	__columnBodyRender: function (argv){
+		return <input.Input key={argv.value} value={argv.value} onEnter={(event)=>this.__cellChange(event, argv)} />;
+	},
 	__columnsLoaded: function (columns){
-		var _columns = [].concat(columns);
+		var _columns = columns.map((column)=>zn.deepAssign({}, column));
 		this.__initCheckbox(_columns);
-		_columns = _columns.forEach(function (column, index){
-			console.log(column, index);
-		});
+		_columns = _columns.map(function (column, index){
+			if(!column.body) {
+				column.body = this.__columnBodyRender;
+			}
+			return column;
+		}.bind(this));
 		this.setState({ columns: _columns });
 	},
 	render: function(){
-		return <DataLifecycle onFinished={this.__columnsLoaded} data={this.props.columns} render={this.__render} />
+		return <znui.react.DataLifecycle onFinished={this.__columnsLoaded} data={this.props.columns} render={this.__render} />
 	}
 });

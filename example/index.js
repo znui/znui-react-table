@@ -10,11 +10,7 @@ var _items = [
     { 
         label: '页面', 
         name: 'page', 
-        width: 220, 
-        body: function (argv){
-            console.log(argv.value);
-            return <input.Input key={argv.value} value={argv.value} />;
-        }
+        width: 220
     },
     { 
         label: '姓名', 
@@ -31,7 +27,12 @@ var _items = [
         name: 'zn_note', 
         width: 400, 
         body: function (argv){
-            return <span>{argv.data.age * 5}</span>;
+            var _value = parseInt(argv.data.age * 5);
+            if(isNaN(_value)){
+                _value = 0;
+            }
+
+            return <span>{_value}</span>;
         } 
     }
 ];

@@ -1,9 +1,8 @@
 var React = znui.React || require('react');
-var DataLifecycle = require('./DataLifecycle');
 var table = require('./table/index');
 var selector = require('znui-react-selector');
 
-var Table = React.createClass({
+module.exports = React.createClass({
 	displayName:'ZRTable',
 	getInitialState: function (){
 		return {
@@ -70,7 +69,7 @@ var Table = React.createClass({
 				{ !!this.props.colgroup && <table.Colgroup columns={columns} {...this.props.colgroup} /> }
 				{ !!this.props.thead && <table.THead onSort={this.__onSort}  onColumnChange={this.__onTHeadColumnChange} columns={columns} {...this.props.thead} table={this} />}
 				{ !!this.props.tfilter && <table.TFilter onFilter={this.__onFilter} columns={columns} {...this.props.filter} table={this} />}
-				{ !!this.props.tbody && <DataLifecycle onFinished={this.__tbodyDataLoaded} data={this.props.data || this.props.tbody.data} render={()=>this.__tbodyDataRender(columns)} onLoading={()=>this.__tbodyLoadingRender(columns)} />}
+				{ !!this.props.tbody && <znui.react.DataLifecycle onFinished={this.__tbodyDataLoaded} data={this.props.data || this.props.tbody.data} render={()=>this.__tbodyDataRender(columns)} onLoading={()=>this.__tbodyLoadingRender(columns)} />}
 				{ !!this.props.tfoot && <table.TFoot columns={columns} {...this.props.tfoot} table={this} />}
 			</table>
 		);
@@ -126,7 +125,7 @@ var Table = React.createClass({
 		}
 	},
 	__columnsLoaded: function (columns){
-		var _columns = [].concat(columns);
+		var _columns = columns.map((column)=>zn.deepAssign({}, column));
 		this.__initCheckbox(_columns);
 		if(this.props.eachColumn) {
 			_columns = _columns.forEach(this.props.eachColumn);
@@ -134,12 +133,6 @@ var Table = React.createClass({
 		this.setState({ columns: _columns });
 	},
 	render: function(){
-		return <DataLifecycle onFinished={this.__columnsLoaded} data={this.props.columns} render={this.__render} />
+		return <znui.react.DataLifecycle onFinished={this.__columnsLoaded} data={this.props.columns} render={this.__render} />
 	}
 });
-
-for(var key in table) {
-	Table[key] = table[key];
-}
-
-module.exports = Table;

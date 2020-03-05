@@ -1,5 +1,5 @@
 var React = znui.React || require('react');
-var filter = require('znui-react-filter/development.js');
+var filter = require('znui-react-filter');
 
 module.exports = React.createClass({
 	displayName: 'ZRFilter',
