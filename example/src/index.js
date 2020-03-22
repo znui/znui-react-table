@@ -1,26 +1,10 @@
-# znui-react-table
-React Table Component
+require('znui-react');
+require('../../src/index.less');
+require('./index.less');
+var React = znui.React || require('react');
+var table = require('../../src/index');
 
-
-[![npm](https://img.shields.io/npm/v/znui-react-table.svg)](https://www.npmjs.com/package/znui-react-table)
-[![npm](https://img.shields.io/npm/dm/znui-react-table.svg)](https://www.npmjs.com/package/znui-react-table)
-
-## Demo
-
-[Take a look at the demo](https://znui.github.io/znui-react-table/example/www/index.html)
-
-## Installation
-
-```bash
-npm install znui-react-table -s
-```
-
-## Usage
-
-```javascript
-
-var ReactDOM = require('react-dom');
-var table = require('znui-react-table');
+var router = require('znui-react-router');
 
 var _items = [
     { 
@@ -104,19 +88,10 @@ var _table1 = {
     }
 };
 
+
 znui.react.createApplication({
     render: <div className="container">
         <table.Table {..._table1} />
         <table.TableEditor {..._table} />
     </div>
 });
-
-```
-
-## Preiview
-
-<img src="https://znui.github.io/znui-react-table/example/images/table.png" />
-
-## License
-
-MIT

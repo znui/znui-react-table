@@ -1,0 +1,395 @@
+.zr-table-cell-checkbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.zr-table-row {
+  line-height: 24px;
+  border-bottom: 1px solid #e6e6e6;
+  border-left: 1px solid #e6e6e6;
+  border-right: 1px solid #e6e6e6;
+}
+.zr-table-row.editable {
+  color: #374047;
+  height: 30px;
+  background-color: rgba(226, 226, 226, 0.2);
+}
+.zr-table-row.editable > td,
+.zr-table-row.editable > th {
+  border: none;
+  padding: 0px;
+  margin: 0px;
+  border-bottom: 1px solid #e6e6e6;
+  border-left: 1px solid #e6e6e6;
+  overflow: visible;
+  line-height: 0px;
+}
+.zr-table-row.editable > td:first-child,
+.zr-table-row.editable > th:first-child {
+  border-left: 0px;
+}
+.zr-table-row.editable .zr-select,
+.zr-table-row.editable .zr-input {
+  width: 100%;
+  border: none;
+  font-size: 12px;
+}
+.zr-table-row.filter .filter-dropdown {
+  margin: 2px;
+  margin-top: 6px;
+  background-color: #e4e2e2;
+  color: #8c8686;
+}
+.zr-table-row.filter .filter-dropdown:hover {
+  background-color: #c5c3c3;
+}
+.zr-table-row > th,
+.zr-table-row > td {
+  position: relative;
+  border: none;
+  border-left: 1px solid #e6e6e6;
+  text-align: left;
+  padding: 0px 6px;
+  line-height: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+.zr-table-row > th.text-align-right,
+.zr-table-row > td.text-align-right {
+  text-align: right !important;
+}
+.zr-table-row > th.text-align-center,
+.zr-table-row > td.text-align-center {
+  text-align: center !important;
+}
+.zr-table-row > th.text-align-left,
+.zr-table-row > td.text-align-left {
+  text-align: left !important;
+}
+.zr-table-thead .thead-label .thead-th {
+  position: relative;
+}
+.zr-table-thead .thead-label .thead-th .th-label svg {
+  font-size: 10px;
+  margin-left: 3px;
+  cursor: pointer;
+}
+.zr-table-thead .thead-label .thead-th .th-sort {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  cursor: pointer;
+}
+.zr-table-tbody .tbody-empty .empty-content {
+  font-size: 16px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.zr-table-tfilter tr {
+  padding: 0px !important;
+}
+.zr-table-tfilter td {
+  padding: 1px !important;
+}
+.zr-table-tfilter td input {
+  border-radius: 0px !important;
+}
+.zr-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.zr-table[data-fixed="true"] {
+  table-layout: fixed;
+}
+.zr-table .zr-table-pager {
+  border-top: 1px solid #e6e6e6;
+}
+.zr-table .zr-table-pager .pager-row td {
+  padding: 0px;
+  margin: 0px;
+}
+.zr-table-editor {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.zr-table-editor[data-fixed="true"] {
+  table-layout: fixed;
+}
+.zr-table-class-normal {
+  background-color: #FFF;
+  border-collapse: collapse;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+}
+.zr-table-class-normal .zr-table-thead {
+  display: table-header-group;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #676767;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+.zr-table-class-normal .zr-table-thead th {
+  position: relative;
+  border: 1px solid #e6e6e6;
+}
+.zr-table-class-normal .zr-table-thead th .cell-sort {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin: 10px 5px;
+  cursor: pointer;
+}
+.zr-table-class-normal .zr-table-thead th:last-child {
+  border-right: none;
+}
+.zr-table-class-normal .zr-table-tfilter {
+  background-color: #fbf0f0;
+}
+.zr-table-class-normal .zr-table-tfilter tr {
+  position: relative;
+}
+.zr-table-class-normal .zr-table-tfilter tr td {
+  border: 1px solid #e6e6e6;
+}
+.zr-table-class-normal .zr-table-tbody > .zr-table-trow {
+  font-size: 12px;
+  cursor: pointer;
+}
+.zr-table-class-normal .zr-table-tbody > .zr-table-trow:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+.zr-table-class-normal .zr-table-tbody > .zr-table-trow[data-active="true"] {
+  color: #FFF !important;
+  border-left: 0px;
+  border-right: 0px;
+  background-color: #3498db !important;
+}
+.zr-table-class-normal .zr-table-tbody > .zr-table-trow:hover {
+  color: #59a5c9;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+.zr-table-class-normal .zr-table-tfoot tr {
+  position: relative;
+}
+.zr-table-class-normal .zr-table-tfoot tr td {
+  border: 1px solid #e6e6e6;
+}
+.zr-table-class-normal .zr-table-trow > th,
+.zr-table-class-normal .zr-table-trow > td {
+  position: relative;
+  border: none;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+  padding: 0px 6px;
+  line-height: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+.zr-table-class-editor {
+  background-color: #FFF;
+  border: 1px solid #e6e6e6;
+  border-collapse: collapse;
+}
+.zr-table-class-editor .zr-table-thead {
+  display: table-header-group;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #676767;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+.zr-table-class-editor .zr-table-thead th {
+  position: relative;
+  border: 1px solid #e6e6e6;
+}
+.zr-table-class-editor .zr-table-thead th .cell-sort {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin: 10px 5px;
+  cursor: pointer;
+}
+.zr-table-class-editor .zr-table-tfilter {
+  background-color: #fbf0f0;
+}
+.zr-table-class-editor .zr-table-tfilter tr {
+  position: relative;
+}
+.zr-table-class-editor .zr-table-tbody > .zr-table-trow {
+  font-size: 12px;
+  cursor: pointer;
+}
+.zr-table-class-editor .zr-table-tbody > .zr-table-trow:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+.zr-table-class-editor .zr-table-tbody > .zr-table-trow[data-active="true"] {
+  color: #3498db !important;
+}
+.zr-table-class-editor .zr-table-tbody > .zr-table-trow:hover {
+  color: #59a5c9;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+.zr-table-class-editor .zr-table-tfoot tr {
+  position: relative;
+}
+.zr-table-class-editor .zr-table-tfoot tr td {
+  border: 1px solid #e6e6e6;
+}
+.zr-table-class-editor .zr-table-trow > th,
+.zr-table-class-editor .zr-table-trow > td {
+  position: relative;
+  border: none;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+.zr-table-class-editor .zr-table-trow > th .zr-input,
+.zr-table-class-editor .zr-table-trow > td .zr-input,
+.zr-table-class-editor .zr-table-trow > th input,
+.zr-table-class-editor .zr-table-trow > td input,
+.zr-table-class-editor .zr-table-trow > th select,
+.zr-table-class-editor .zr-table-trow > td select,
+.zr-table-class-editor .zr-table-trow > th textarea,
+.zr-table-class-editor .zr-table-trow > td textarea {
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  border: none;
+  background-color: transparent !important;
+}
+.zr-table-class-editor .zr-table-trow > th .zr-input:focus,
+.zr-table-class-editor .zr-table-trow > td .zr-input:focus,
+.zr-table-class-editor .zr-table-trow > th input:focus,
+.zr-table-class-editor .zr-table-trow > td input:focus,
+.zr-table-class-editor .zr-table-trow > th select:focus,
+.zr-table-class-editor .zr-table-trow > td select:focus,
+.zr-table-class-editor .zr-table-trow > th textarea:focus,
+.zr-table-class-editor .zr-table-trow > td textarea:focus {
+  background-color: #f7f1f0 !important;
+}
+.zr-table-class-editor .zr-table-trow > th.text-align-right,
+.zr-table-class-editor .zr-table-trow > td.text-align-right {
+  text-align: right !important;
+}
+.zr-table-class-editor .zr-table-trow > th.text-align-center,
+.zr-table-class-editor .zr-table-trow > td.text-align-center {
+  text-align: center !important;
+}
+.zr-table-class-editor .zr-table-trow > th.text-align-left,
+.zr-table-class-editor .zr-table-trow > td.text-align-left {
+  text-align: left !important;
+}
+.zr-table-class-zxnz {
+  background-color: #FFF;
+  border: 1px solid #e6e6e6;
+  border-collapse: collapse;
+}
+.zr-table-class-zxnz .zr-table-thead {
+  display: table-header-group;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #676767;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+.zr-table-class-zxnz .zr-table-thead th {
+  position: relative;
+  border: 1px solid #e6e6e6;
+}
+.zr-table-class-zxnz .zr-table-thead th .cell-sort {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin: 10px 5px;
+  cursor: pointer;
+}
+.zr-table-class-zxnz .zr-table-tfilter {
+  background-color: #fbf0f0;
+}
+.zr-table-class-zxnz .zr-table-tfilter tr {
+  position: relative;
+}
+.zr-table-class-zxnz .zr-table-tbody > .zr-table-trow {
+  font-size: 12px;
+  cursor: pointer;
+}
+.zr-table-class-zxnz .zr-table-tbody > .zr-table-trow:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+.zr-table-class-zxnz .zr-table-tbody > .zr-table-trow[data-active="true"] {
+  color: #3498db !important;
+}
+.zr-table-class-zxnz .zr-table-tbody > .zr-table-trow:hover {
+  color: #59a5c9;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+.zr-table-class-zxnz .zr-table-tfoot tr {
+  position: relative;
+}
+.zr-table-class-zxnz .zr-table-tfoot tr td {
+  border: 1px solid #e6e6e6;
+}
+.zr-table-class-zxnz .zr-table-trow > th,
+.zr-table-class-zxnz .zr-table-trow > td {
+  position: relative;
+  border: none;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+.zr-table-class-zxnz .zr-table-trow > th .zr-input,
+.zr-table-class-zxnz .zr-table-trow > td .zr-input,
+.zr-table-class-zxnz .zr-table-trow > th input,
+.zr-table-class-zxnz .zr-table-trow > td input,
+.zr-table-class-zxnz .zr-table-trow > th select,
+.zr-table-class-zxnz .zr-table-trow > td select,
+.zr-table-class-zxnz .zr-table-trow > th textarea,
+.zr-table-class-zxnz .zr-table-trow > td textarea {
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  border: none;
+  background-color: transparent !important;
+}
+.zr-table-class-zxnz .zr-table-trow > th .zr-input:focus,
+.zr-table-class-zxnz .zr-table-trow > td .zr-input:focus,
+.zr-table-class-zxnz .zr-table-trow > th input:focus,
+.zr-table-class-zxnz .zr-table-trow > td input:focus,
+.zr-table-class-zxnz .zr-table-trow > th select:focus,
+.zr-table-class-zxnz .zr-table-trow > td select:focus,
+.zr-table-class-zxnz .zr-table-trow > th textarea:focus,
+.zr-table-class-zxnz .zr-table-trow > td textarea:focus {
+  background-color: #f7f1f0 !important;
+}
+.zr-table-class-zxnz .zr-table-trow > th.text-align-right,
+.zr-table-class-zxnz .zr-table-trow > td.text-align-right {
+  text-align: right !important;
+}
+.zr-table-class-zxnz .zr-table-trow > th.text-align-center,
+.zr-table-class-zxnz .zr-table-trow > td.text-align-center {
+  text-align: center !important;
+}
+.zr-table-class-zxnz .zr-table-trow > th.text-align-left,
+.zr-table-class-zxnz .zr-table-trow > td.text-align-left {
+  text-align: left !important;
+}
+
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiIuL2Rpc3QvZGV2ZWxvcG1lbnQvaW5kZXguc3R5bGUuYnVuZGxlLmNzcyIsInNvdXJjZVJvb3QiOiIifQ==*/

@@ -4,8 +4,8 @@
 @trow-clicked-color: #3498db;
 .zr-table-class-normal {
     background-color: #FFF;
-    border: 1px solid @thead-border-color;
     border-collapse: collapse;
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
     .zr-table-thead{
         display: table-header-group;
         vertical-align: middle;
@@ -21,6 +21,9 @@
                 right: 0px;
                 margin: 10px 5px;
                 cursor: pointer;
+            }
+            &:last-child{
+                border-right: none;
             }
         }
         

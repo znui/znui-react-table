@@ -32,10 +32,9 @@ module.exports = React.createClass({
 			tbody: this
 		});
 
-		if(_element){
-		 	_element = <div>Empty</div>;
+		if(!_element){
+		 	_element = <div className="empty-content">No Data.</div>;
 		}
-
 		var _empty = zn.extend({ className: '', style: {} }, this.props.empty);
 		return <tr className={znui.react.classname("tbody-empty", _empty.className)} style={_empty.style}>
 			<td colSpan={this.props.columns.length}>{_element}</td>

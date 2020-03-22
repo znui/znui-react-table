@@ -1,4 +1,3 @@
-require('znui-react');
 module.exports = {
     table: require('./table/index'),
     cell: require('./cell/index'),
