@@ -65,7 +65,9 @@ var _table = {
         data: _data
     },
     tfoot: {
-
+        render: function (){
+            return <div>a</div>;
+        }
     },
     onCheckboxChange: function (data, table){
         console.log(data);
@@ -92,6 +94,7 @@ var _table1 = {
 znui.react.createApplication({
     render: <div className="container">
         <table.Table {..._table1} />
+        <table.TablePager {..._table1} />
         <table.TableEditor {..._table} />
     </div>
 });

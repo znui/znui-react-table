@@ -29,8 +29,12 @@ module.exports = React.createClass({
 			tfoot: this
 		});
 
+		if(this.props.render) {
+			_content = this.props.render(column, index, this);
+		}
+
 		var _cell = zn.extend({ style: {}, className: '' }, this.props.cell);
-		return <th key={index} className={znui.react.classname('thead-cell', _cell.className)} style={_cell.style}>
+		return <th key={index} className={znui.react.classname('tfoot-cell', _cell.className)} style={_cell.style}>
 			{ _content }
 		</th>;
 	},

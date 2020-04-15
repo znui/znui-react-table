@@ -1,41 +1,44 @@
 var React = znui.React || require('react');
 var table = require('./table/index');
 var selector = require('znui-react-selector');
-var pager = require('znui-react-pager');
 
 module.exports = React.createClass({
 	displayName:'ZRTable',
 	getInitialState: function (){
 		return {
-			data: [], 
+			data: null, 
 			columns: [],
 			checkeds: []
 		};
+	},
+	__sortFunction: function (next, prev, key, _sort){
+		if(this.props.sortFunction) {
+			return this.props.sortFunction(next, prev, key, _sort);
+		}
+		if(_sort=='desc'){
+			if(next[key] > prev[key]){
+				return 1;
+			}else if(next[key] == prev[key]){
+				return 0;
+			}else if(next[key] < prev[key]){
+				return -1;
+			}
+		}
+		if(_sort=='asc'){
+			if(next[key] < prev[key]){
+				return 1;
+			}else if(next[key] == prev[key]){
+				return 0;
+			}else if(next[key] > prev[key]){
+				return -1;
+			}
+		}
 	},
 	__onSort: function (sort){
 		var _sort = null;
 		for(var key in sort){
 			_sort = sort[key]
-			this.state.data = this.state.data.sort(function (next, prev){
-				if(_sort=='desc'){
-					if(next[key] > prev[key]){
-						return 1;
-					}else if(next[key] == prev[key]){
-						return 0;
-					}else if(next[key] < prev[key]){
-						return -1;
-					}
-				}
-				if(_sort=='asc'){
-					if(next[key] < prev[key]){
-						return 1;
-					}else if(next[key] == prev[key]){
-						return 0;
-					}else if(next[key] > prev[key]){
-						return -1;
-					}
-				}
-			});
+			this.state.data = this.state.data.sort((next, prev) => this.__sortFunction(next, prev, key, _sort));
 		}
 
 		this.forceUpdate();
@@ -60,45 +63,7 @@ module.exports = React.createClass({
 	},
 	__renderTBody: function (columns){
 		var _data = this.props.data || this.props.tbody.data;
-		if(zn.is(_data, 'object')){
-			return <znui.react.DataLifecycle data={_data} render={()=>this.__tbodyDataRender(columns)} onFinished={this.__tbodyDataLoaded} onLoading={()=>this.__tbodyLoadingRender(columns)} />;
-		}
-		if(zn.is(_data, 'array')) {
-			return <table.TBody {...this.props.tbody} columns={columns} data={_data} table={this} />;
-		}
-	},
-	__renderPager: function (columns, props){
-		var _props = props,
-			_Component = _props.component;
-		if(zn.is(_Component, 'string')){
-			_Component = zn.path(window, _Component);
-		}
-		_Component = _Component || pager.SimplePager;
-		if(_props.total == null) {
-			_props.total = this.state.total;
-		}
-		if(_props.count == null) {
-			_props.count = this.state.count;
-		}
-		if(_props.current == null) {
-			_props.current = this.state.current || 1;
-		}
-
-		var _element = znui.react.createReactElement(this.props.pagerRender, {
-			table: this
-		});
-
-		if(!_element){
-		 	_element = <_Component {..._props} />;
-		}
-
-		return (
-			<tfoot className="zr-table-pager">
-				<tr className="pager-row">
-					<td colSpan={columns.length}>{_element}</td>
-				</tr>
-			</tfoot>
-		);
+		return <znui.react.DataLifecycle data={_data} render={()=>this.__tbodyDataRender(columns)} onFinished={this.__tbodyDataLoaded} onLoading={()=>this.__tbodyLoadingRender(columns)} />;
 	},
 	__render: function (){
 		var columns = this.state.columns;
@@ -114,7 +79,8 @@ module.exports = React.createClass({
 				{ !!this.props.tfilter && <table.TFilter onFilter={this.__onFilter} columns={columns} {...this.props.filter} table={this} />}
 				{ !!this.props.tbody && this.__renderTBody(columns) }
 				{ !!this.props.tfoot && <table.TFoot columns={columns} {...this.props.tfoot} table={this} />}
-				{ !!this.props.pager && this.__renderPager(columns, this.props.pager) }
+				{ this.props.childrenRender && this.props.childrenRender(columns, this) }
+				{ this.props.children }
 			</table>
 		);
 	},
@@ -123,7 +89,7 @@ module.exports = React.createClass({
 				width: 60,
 				head: function (argv){
 					var _table = argv.thead.props.table;
-					return <selector.Checkbox 
+					return <selector.Checkbox
 								style={{ justifyContent: 'center' }}
 								key={this.state.checkeds.length}
 								text={'(' + _table.state.checkeds.length +')'}
@@ -169,11 +135,19 @@ module.exports = React.createClass({
 		}
 	},
 	__columnsLoaded: function (columns){
-		var _columns = columns.map((column)=>zn.deepAssign({}, column));
+		var _temp = null,
+			_result = null,
+			_columnIterator = this.props.columnIterator,
+			_columns = columns.map(function (column){
+				_temp = zn.deepAssign({}, column);
+				_result = _columnIterator && _columnIterator(_temp, this);
+				if(_result === false) return null;
+				if(typeof _result == 'object') return _result;
+
+				return _temp;
+			}.bind(this));
 		this.__initCheckbox(_columns);
-		if(this.props.eachColumn) {
-			_columns = _columns.forEach(this.props.eachColumn);
-		}
+		this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);
 		this.setState({ columns: _columns });
 	},
 	render: function(){
