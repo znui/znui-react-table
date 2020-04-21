@@ -1,5 +1,7 @@
 "use strict";
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 var React = znui.React || require('react');
@@ -8,42 +10,49 @@ var table = require('./table/index');
 
 var selector = require('znui-react-selector');
 
-var pager = require('znui-react-pager');
-
 module.exports = React.createClass({
   displayName: 'ZRTable',
   getInitialState: function getInitialState() {
     return {
-      data: [],
+      data: null,
       columns: [],
       checkeds: []
     };
   },
+  __sortFunction: function __sortFunction(next, prev, key, _sort) {
+    if (this.props.sortFunction) {
+      return this.props.sortFunction(next, prev, key, _sort);
+    }
+
+    if (_sort == 'desc') {
+      if (next[key] > prev[key]) {
+        return 1;
+      } else if (next[key] == prev[key]) {
+        return 0;
+      } else if (next[key] < prev[key]) {
+        return -1;
+      }
+    }
+
+    if (_sort == 'asc') {
+      if (next[key] < prev[key]) {
+        return 1;
+      } else if (next[key] == prev[key]) {
+        return 0;
+      } else if (next[key] > prev[key]) {
+        return -1;
+      }
+    }
+  },
   __onSort: function __onSort(sort) {
+    var _this = this;
+
     var _sort = null;
 
     for (var key in sort) {
       _sort = sort[key];
       this.state.data = this.state.data.sort(function (next, prev) {
-        if (_sort == 'desc') {
-          if (next[key] > prev[key]) {
-            return 1;
-          } else if (next[key] == prev[key]) {
-            return 0;
-          } else if (next[key] < prev[key]) {
-            return -1;
-          }
-        }
-
-        if (_sort == 'asc') {
-          if (next[key] < prev[key]) {
-            return 1;
-          } else if (next[key] == prev[key]) {
-            return 0;
-          } else if (next[key] > prev[key]) {
-            return -1;
-          }
-        }
+        return _this.__sortFunction(next, prev, key, _sort);
       });
     }
 
@@ -72,74 +81,41 @@ module.exports = React.createClass({
       this.forceUpdate();
     }
   },
-  __tbodyDataLoaded: function __tbodyDataLoaded(data) {
-    this.setState({
-      data: data
-    });
+  __tbodyDataLoaded: function __tbodyDataLoaded(response) {
+    var _return = this.props.onDataLoaded && this.props.onDataLoaded(response, this);
+
+    if (_return !== false) {
+      this.setState({
+        data: response
+      });
+    }
+  },
+  __onDataCreated: function __onDataCreated(data, lifycycle) {
+    this.data = data;
+    this.props.onDataCreated && this.props.onDataCreated(data, this);
   },
   __renderTBody: function __renderTBody(columns) {
-    var _this = this;
+    var _this2 = this;
 
     var _data = this.props.data || this.props.tbody.data;
 
-    if (zn.is(_data, 'object')) {
-      return /*#__PURE__*/React.createElement(znui.react.DataLifecycle, {
-        data: _data,
-        render: function render() {
-          return _this.__tbodyDataRender(columns);
-        },
-        onFinished: this.__tbodyDataLoaded,
-        onLoading: function onLoading() {
-          return _this.__tbodyLoadingRender(columns);
-        }
-      });
+    var _result = this.props.onDataInitial && this.props.onDataInitial(_data, this);
+
+    if (_result) {
+      _data = _result;
     }
 
-    if (zn.is(_data, 'array')) {
-      return /*#__PURE__*/React.createElement(table.TBody, _extends({}, this.props.tbody, {
-        columns: columns,
-        data: _data,
-        table: this
-      }));
-    }
-  },
-  __renderPager: function __renderPager(columns, props) {
-    var _props = props,
-        _Component = _props.component;
-
-    if (zn.is(_Component, 'string')) {
-      _Component = zn.path(window, _Component);
-    }
-
-    _Component = _Component || pager.SimplePager;
-
-    if (_props.total == null) {
-      _props.total = this.state.total;
-    }
-
-    if (_props.count == null) {
-      _props.count = this.state.count;
-    }
-
-    if (_props.current == null) {
-      _props.current = this.state.current || 1;
-    }
-
-    var _element = znui.react.createReactElement(this.props.pagerRender, {
-      table: this
+    return /*#__PURE__*/React.createElement(znui.react.DataLifecycle, {
+      data: _data,
+      render: function render() {
+        return _this2.__tbodyDataRender(columns);
+      },
+      loadingRender: function loadingRender() {
+        return _this2.__tbodyLoadingRender(columns);
+      },
+      onDataCreated: this.__onDataCreated,
+      onFinished: this.__tbodyDataLoaded
     });
-
-    if (!_element) {
-      _element = /*#__PURE__*/React.createElement(_Component, _props);
-    }
-
-    return /*#__PURE__*/React.createElement("tfoot", {
-      className: "zr-table-pager"
-    }, /*#__PURE__*/React.createElement("tr", {
-      className: "pager-row"
-    }, /*#__PURE__*/React.createElement("td", {
-      colSpan: columns.length
-    }, _element)));
   },
   __render: function __render() {
     var columns = this.state.columns;
@@ -167,17 +143,17 @@ module.exports = React.createClass({
       columns: columns
     }, this.props.filter, {
       table: this
-    })), !!this.props.tbody && this.__renderTBody(columns), !!this.props.tfoot && /*#__PURE__*/React.createElement(table.TFoot, _extends({
+    })), (this.props.tbody || this.props.data) && this.__renderTBody(columns), !!this.props.tfoot && /*#__PURE__*/React.createElement(table.TFoot, _extends({
       columns: columns
     }, this.props.tfoot, {
       table: this
-    })), !!this.props.pager && this.__renderPager(columns, this.props.pager));
+    })), this.props.childrenRender && this.props.childrenRender(columns, this), this.props.children);
   },
   __initCheckbox: function __initCheckbox(columns) {
     var _checkbox = {
       width: 60,
       head: function (argv) {
-        var _this2 = this;
+        var _this3 = this;
 
         var _table = argv.thead.props.table;
         return /*#__PURE__*/React.createElement(selector.Checkbox, {
@@ -189,19 +165,19 @@ module.exports = React.createClass({
           checked: !!_table.state.data.length && _table.state.checkeds.length === _table.state.data.length,
           onChange: function onChange(event) {
             if (event.checked) {
-              _this2.state.checkeds = _this2.state.data.slice(0);
+              _this3.state.checkeds = _this3.state.data.slice(0);
             } else {
-              _this2.state.checkeds = [];
+              _this3.state.checkeds = [];
             }
 
-            _this2.forceUpdate();
+            _this3.forceUpdate();
 
-            _this2.props.onCheckboxChange && _this2.props.onCheckboxChange(_this2.state.checkeds, _this2);
+            _this3.props.onCheckboxChange && _this3.props.onCheckboxChange(_this3.state.checkeds, _this3);
           }
         });
       }.bind(this),
       body: function (argv) {
-        var _this3 = this;
+        var _this4 = this;
 
         var _data = argv.data;
         return /*#__PURE__*/React.createElement(selector.UncontrolCheckbox, {
@@ -213,14 +189,14 @@ module.exports = React.createClass({
             event.stopPropagation();
 
             if (checkbox.props.checked) {
-              _this3.state.checkeds.splice(_this3.state.checkeds.indexOf(_data), 1);
+              _this4.state.checkeds.splice(_this4.state.checkeds.indexOf(_data), 1);
             } else {
-              _this3.state.checkeds.push(_data);
+              _this4.state.checkeds.push(_data);
             }
 
-            _this3.forceUpdate();
+            _this4.forceUpdate();
 
-            _this3.props.onCheckboxChange && _this3.props.onCheckboxChange(_this3.state.checkeds, _this3);
+            _this4.props.onCheckboxChange && _this4.props.onCheckboxChange(_this4.state.checkeds, _this4);
           }
         });
       }.bind(this)
@@ -242,16 +218,20 @@ module.exports = React.createClass({
     }
   },
   __columnsLoaded: function __columnsLoaded(columns) {
-    var _columns = columns.map(function (column) {
-      return zn.deepAssign({}, column);
-    });
+    var _temp = null,
+        _result = null,
+        _columnIterator = this.props.columnIterator,
+        _columns = columns.map(function (column) {
+      _temp = zn.deepAssign({}, column);
+      _result = _columnIterator && _columnIterator(_temp, this);
+      if (_result === false) return null;
+      if (_typeof(_result) == 'object') return _result;
+      return _temp;
+    }.bind(this));
 
     this.__initCheckbox(_columns);
 
-    if (this.props.eachColumn) {
-      _columns = _columns.forEach(this.props.eachColumn);
-    }
-
+    this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);
     this.setState({
       columns: _columns
     });

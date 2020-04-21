@@ -58,12 +58,27 @@ module.exports = React.createClass({
 			this.forceUpdate();
 		}
 	},
-	__tbodyDataLoaded: function (data) {
-		this.setState({ data: data });
+	__tbodyDataLoaded: function (response) {
+		var _return = this.props.onDataLoaded && this.props.onDataLoaded(response, this);
+		if(_return !== false){
+			this.setState({ data: response });
+		}
+	},
+	__onDataCreated: function (data, lifycycle){
+		this.data = data;
+		this.props.onDataCreated && this.props.onDataCreated(data, this);
 	},
 	__renderTBody: function (columns){
 		var _data = this.props.data || this.props.tbody.data;
-		return <znui.react.DataLifecycle data={_data} render={()=>this.__tbodyDataRender(columns)} onFinished={this.__tbodyDataLoaded} onLoading={()=>this.__tbodyLoadingRender(columns)} />;
+		var _result = this.props.onDataInitial && this.props.onDataInitial(_data, this);
+		if(_result){
+			_data = _result;
+		}
+		return <znui.react.DataLifecycle data={_data} 
+					render={()=>this.__tbodyDataRender(columns)} 
+					loadingRender={()=>this.__tbodyLoadingRender(columns)}
+					onDataCreated={this.__onDataCreated}
+					onFinished={this.__tbodyDataLoaded} />;
 	},
 	__render: function (){
 		var columns = this.state.columns;
@@ -77,7 +92,7 @@ module.exports = React.createClass({
 				{ !!this.props.colgroup && <table.Colgroup columns={columns} {...this.props.colgroup} /> }
 				{ !!this.props.thead && <table.THead onSort={this.__onSort}  onColumnChange={this.__onTHeadColumnChange} columns={columns} {...this.props.thead} table={this} />}
 				{ !!this.props.tfilter && <table.TFilter onFilter={this.__onFilter} columns={columns} {...this.props.filter} table={this} />}
-				{ !!this.props.tbody && this.__renderTBody(columns) }
+				{ (this.props.tbody || this.props.data) && this.__renderTBody(columns) }
 				{ !!this.props.tfoot && <table.TFoot columns={columns} {...this.props.tfoot} table={this} />}
 				{ this.props.childrenRender && this.props.childrenRender(columns, this) }
 				{ this.props.children }

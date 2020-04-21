@@ -18,7 +18,7 @@ module.exports = React.createClass({
 			tbody: this
 		});
 
-		if(_element){
+		if(!_element){
 		 	_element = <loader.DataLoader loader="wave" title={'Loading...'} />;
 		}
 
