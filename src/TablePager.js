@@ -6,19 +6,25 @@ module.exports = React.createClass({
 	displayName:'ZRTablePager',
 	getInitialState: function (){
 		return {
-			total: 0,
 			count: 0,
 			current: 1,
-			data: null
+			data: [],
+			total: 0,
+			pageIndex: this.props.pageIndex || 1
 		};
 	},
-	__handlePageChanged: function (page, pager){
-		this.state.current = page;
-		this.props.onPageChanged && this.props.onPageChanged(page, pager, this);
-		if(this.data){
-			console.log(this.state.data, this.data);
+	__handlePageChanged: function (newPage){
+		var _return = this.props.onPageChanged && this.props.onPageChanged(newPage, this);
+		if(_return !== false) {
+			this.setPageIndex(newPage);
 		}
-		this.forceUpdate();
+	},
+	setPageIndex: function (pageIndex){
+		if(this.data){
+			this.state.pageIndex = pageIndex;
+			this.forceUpdate();
+			this.data.refresh();
+		}
 	},
 	__renderPager: function (columns, table){
 		var _columnSize = columns.length;
@@ -32,7 +38,7 @@ module.exports = React.createClass({
 				current: _state.current,
 				onPageChanged: this.__handlePageChanged
 			},
-			_Component = this.props.pager || pager.SimplePager;
+			_Component = this.props.pager || pager.Pager;
 		if(zn.is(_Component, 'string')){
 			_Component = zn.path(window, _Component);
 		}
@@ -61,8 +67,7 @@ module.exports = React.createClass({
 				data: 'data'
 			}, this.props.keyMaps);
 
-
-		_params[_keyMaps.pageIndex] = this.props.pageIndex || 1;
+		_params[_keyMaps.pageIndex] = this.state.pageIndex || 1;
 		_params[_keyMaps.pageSize] = this.props.pageSize || 10;
 		if(_method == 'get'){
 			data = zn.deepAssign(data, {
@@ -73,30 +78,22 @@ module.exports = React.createClass({
 				data: _params
 			});
 		}
-		this.state.keyMaps = _keyMaps;
-
-		return this.state.data = data, data;
+		
+		return this.state.keyMaps = _keyMaps, data;
 	},
 	__onDataCreated: function (data, table){
 		this.data = data;
+		this.props.onDataCreated && this.props.onDataCreated(data, table, this);
 	},
-	__getPageCount: function(total, pageSize) {
-        var _count = parseInt(total/pageSize);
-        if((total%pageSize)>0){
-            _count += 1;
-        }
-
-        return _count;
-    },
 	__onDataLoaded: function (response, table){
 		var _data = response.data;
-		var _return = this.props.onDataLoaded && this.props.onDataLoaded(_data, table, tablePager);
+		var _return = this.props.onDataLoaded && this.props.onDataLoaded(_data, table, this);
 		if(_return !== false){
 			table.setState({
 				data: _data[this.state.keyMaps.data]
 			});
 			this.setState({
-				total: this.__getPageCount(this.state.keyMaps.total, this.state.keyMaps.pageSize),
+				total: Math.ceil(_data[this.state.keyMaps.total]/this.props.pageSize),
 				count: _data[this.state.keyMaps.total],
 				current: _data[this.state.keyMaps.pageIndex],
 			});
