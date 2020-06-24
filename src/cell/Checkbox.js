@@ -1,5 +1,4 @@
 var React = znui.React || require('react');
-var ReactDOM = znui.ReactDOM || require('react-dom');
 var Checkbox = require('znui-react-selector').Checkbox;
 
 module.exports = React.createClass({
