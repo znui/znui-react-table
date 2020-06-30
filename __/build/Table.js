@@ -14,7 +14,7 @@ module.exports = React.createClass({
   displayName: 'ZRTable',
   getInitialState: function getInitialState() {
     return {
-      data: null,
+      data: [],
       columns: [],
       checkeds: []
     };
@@ -81,18 +81,33 @@ module.exports = React.createClass({
       this.forceUpdate();
     }
   },
-  __tbodyDataLoaded: function __tbodyDataLoaded(response) {
-    var _return = this.props.onDataLoaded && this.props.onDataLoaded(response, this);
+  __tbodyDataLoaded: function __tbodyDataLoaded(data) {
+    var _return = this.props.onDataLoaded && this.props.onDataLoaded(data, this);
 
     if (_return !== false) {
       this.setState({
-        data: response
+        data: data
       });
     }
   },
   __onDataCreated: function __onDataCreated(data, lifycycle) {
     this.data = data;
     this.props.onDataCreated && this.props.onDataCreated(data, this);
+  },
+  refresh: function refresh() {
+    if (this.data) {
+      this.state.checkeds = [];
+      this.data.refresh();
+    }
+
+    return this;
+  },
+  refreshHeaders: function refreshHeaders() {
+    if (this._columns) {
+      this._columns.refresh();
+    }
+
+    return this;
   },
   __renderTBody: function __renderTBody(columns) {
     var _this2 = this;
@@ -107,12 +122,13 @@ module.exports = React.createClass({
 
     return /*#__PURE__*/React.createElement(znui.react.DataLifecycle, {
       data: _data,
-      render: function render() {
+      dataRender: function dataRender() {
         return _this2.__tbodyDataRender(columns);
       },
       loadingRender: function loadingRender() {
         return _this2.__tbodyLoadingRender(columns);
       },
+      responseHandler: this.props.responseHandler,
       onDataCreated: this.__onDataCreated,
       onFinished: this.__tbodyDataLoaded
     });
@@ -131,11 +147,13 @@ module.exports = React.createClass({
       className: this.props.caption.className,
       style: this.props.caption.style
     }, this.props.caption.render), !!this.props.colgroup && /*#__PURE__*/React.createElement(table.Colgroup, _extends({
+      keyMapping: this.props.keyMapping,
       columns: columns
     }, this.props.colgroup)), !!this.props.thead && /*#__PURE__*/React.createElement(table.THead, _extends({
       onSort: this.__onSort,
       onColumnChange: this.__onTHeadColumnChange,
-      columns: columns
+      columns: columns,
+      keyMapping: this.props.keyMapping
     }, this.props.thead, {
       table: this
     })), !!this.props.tfilter && /*#__PURE__*/React.createElement(table.TFilter, _extends({
@@ -156,6 +174,7 @@ module.exports = React.createClass({
         var _this3 = this;
 
         var _table = argv.thead.props.table;
+        if (!_table) return;
         return /*#__PURE__*/React.createElement(selector.Checkbox, {
           style: {
             justifyContent: 'center'
@@ -236,11 +255,19 @@ module.exports = React.createClass({
       columns: _columns
     });
   },
+  __onColumnDataCreated: function __onColumnDataCreated(data, lifecycle) {
+    this._columns = data;
+    this.props.onDataCreated && this.props.onDataCreated(data, lifecycle, this);
+  },
   render: function render() {
     return /*#__PURE__*/React.createElement(znui.react.DataLifecycle, {
-      onFinished: this.__columnsLoaded,
       data: this.props.columns,
-      render: this.__render
+      render: this.__render,
+      responseHandler: this.props.responseHandler,
+      onLoading: this.props.onColumnLoading,
+      onFinished: this.__columnsLoaded,
+      onError: this.props.onColumnLoadError,
+      onDataCreated: this.__onColumnDataCreated
     });
   }
 });

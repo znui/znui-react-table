@@ -1,6 +1,6 @@
 {
   "name": "znui-react-table",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Web table component.",
   "main": "index.js",
   "scripts": {

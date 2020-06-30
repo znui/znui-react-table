@@ -12,6 +12,9 @@ var jsoneditor = require('rt-json-editor');
 
 module.exports = React.createClass({
   displayName: 'THead',
+  getDefaultProps: function getDefaultProps() {
+    return {};
+  },
   getInitialState: function getInitialState() {
     return {
       className: '',
@@ -74,12 +77,15 @@ module.exports = React.createClass({
       column: column,
       cellIndex: index,
       thead: this
-    });
+    }),
+        _mapping = this.props.keyMapping || {},
+        _labelKey = _mapping['label'] || 'label',
+        _label = column[_labelKey];
 
     if (!_content) {
       _content = /*#__PURE__*/React.createElement("div", {
         className: "cell-label"
-      }, column.label, !!column.editable && /*#__PURE__*/React.createElement(popup.Dropdown, {
+      }, _label, !!column.editable && /*#__PURE__*/React.createElement(popup.Dropdown, {
         className: "cell-editor",
         popover: {
           render: this.__iconClickRender(column, index),

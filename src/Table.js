@@ -6,7 +6,7 @@ module.exports = React.createClass({
 	displayName:'ZRTable',
 	getInitialState: function (){
 		return {
-			data: null, 
+			data: [], 
 			columns: [],
 			checkeds: []
 		};
@@ -58,15 +58,30 @@ module.exports = React.createClass({
 			this.forceUpdate();
 		}
 	},
-	__tbodyDataLoaded: function (response) {
-		var _return = this.props.onDataLoaded && this.props.onDataLoaded(response, this);
+	__tbodyDataLoaded: function (data) {
+		var _return = this.props.onDataLoaded && this.props.onDataLoaded(data, this);
 		if(_return !== false){
-			this.setState({ data: response });
+			this.setState({ data: data });
 		}
 	},
 	__onDataCreated: function (data, lifycycle){
 		this.data = data;
 		this.props.onDataCreated && this.props.onDataCreated(data, this);
+	},
+	refresh: function (){
+		if(this.data){
+			this.state.checkeds = [];
+			this.data.refresh();
+		}
+
+		return this;
+	},
+	refreshHeaders: function (){
+		if(this._columns){
+			this._columns.refresh();
+		}
+
+		return this;
 	},
 	__renderTBody: function (columns){
 		var _data = this.props.data || this.props.tbody.data;
@@ -75,8 +90,9 @@ module.exports = React.createClass({
 			_data = _result;
 		}
 		return <znui.react.DataLifecycle data={_data} 
-					render={()=>this.__tbodyDataRender(columns)} 
+					dataRender={()=>this.__tbodyDataRender(columns)} 
 					loadingRender={()=>this.__tbodyLoadingRender(columns)}
+					responseHandler={this.props.responseHandler}
 					onDataCreated={this.__onDataCreated}
 					onFinished={this.__tbodyDataLoaded} />;
 	},
@@ -89,8 +105,8 @@ module.exports = React.createClass({
 				cellPadding={this.props.cellPadding || 0} 
 				cellSpacing={this.props.cellSpacing || 0} {...this.props.attrs}>
 				{ !!this.props.caption && <caption className={this.props.caption.className} style={this.props.caption.style}>{this.props.caption.render}</caption> }
-				{ !!this.props.colgroup && <table.Colgroup columns={columns} {...this.props.colgroup} /> }
-				{ !!this.props.thead && <table.THead onSort={this.__onSort}  onColumnChange={this.__onTHeadColumnChange} columns={columns} {...this.props.thead} table={this} />}
+				{ !!this.props.colgroup && <table.Colgroup keyMapping={this.props.keyMapping} columns={columns} {...this.props.colgroup} /> }
+				{ !!this.props.thead && <table.THead onSort={this.__onSort} onColumnChange={this.__onTHeadColumnChange} columns={columns} keyMapping={this.props.keyMapping} {...this.props.thead} table={this} />}
 				{ !!this.props.tfilter && <table.TFilter onFilter={this.__onFilter} columns={columns} {...this.props.filter} table={this} />}
 				{ (this.props.tbody || this.props.data) && this.__renderTBody(columns) }
 				{ !!this.props.tfoot && <table.TFoot columns={columns} {...this.props.tfoot} table={this} />}
@@ -104,6 +120,7 @@ module.exports = React.createClass({
 				width: 60,
 				head: function (argv){
 					var _table = argv.thead.props.table;
+					if(!_table) return;
 					return <selector.Checkbox
 								style={{ justifyContent: 'center' }}
 								key={this.state.checkeds.length}
@@ -165,7 +182,18 @@ module.exports = React.createClass({
 		this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);
 		this.setState({ columns: _columns });
 	},
+	__onColumnDataCreated: function (data, lifecycle){
+		this._columns = data;
+		this.props.onDataCreated && this.props.onDataCreated(data, lifecycle, this);
+	},
 	render: function(){
-		return <znui.react.DataLifecycle onFinished={this.__columnsLoaded} data={this.props.columns} render={this.__render} />
+		return <znui.react.DataLifecycle
+					data={this.props.columns}
+					render={this.__render}
+					responseHandler={this.props.responseHandler}
+					onLoading={this.props.onColumnLoading}
+					onFinished={this.__columnsLoaded}
+					onError={this.props.onColumnLoadError}
+					onDataCreated={this.__onColumnDataCreated} />;
 	}
 });

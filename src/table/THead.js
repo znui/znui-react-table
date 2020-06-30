@@ -5,6 +5,9 @@ var SVGIcon = require('znui-react-icon').SVGIcon;
 var jsoneditor = require('rt-json-editor');
 module.exports = React.createClass({
 	displayName:'THead',
+	getDefaultProps: function (){
+		return {};
+	},
 	getInitialState: function (){
 		return {
 			className: '',
@@ -45,13 +48,16 @@ module.exports = React.createClass({
 		}
 
 		var _content = znui.react.createReactElement(column.render || column.head, {
-			column: column,
-			cellIndex: index, 
-			thead: this
-		});
+				column: column,
+				cellIndex: index, 
+				thead: this
+			}),
+			_mapping = this.props.keyMapping || {},
+			_labelKey = _mapping['label'] || 'label',
+			_label = column[_labelKey];
 		if(!_content) {
 			_content = <div className="cell-label">
-				{ column.label }
+				{ _label }
 				{ 
 					!!column.editable && <popup.Dropdown 
 						className="cell-editor" 
