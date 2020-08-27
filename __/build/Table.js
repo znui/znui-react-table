@@ -59,7 +59,7 @@ module.exports = React.createClass({
     this.forceUpdate();
   },
   __onFilter: function __onFilter(filter) {
-    console.log(filter, this.state.data);
+    this.props.onFilterChange && this.props.onFilterChange(filter, this.state.data, this);
   },
   __tbodyDataRender: function __tbodyDataRender(columns) {
     return /*#__PURE__*/React.createElement(table.TBody, _extends({}, this.props.tbody, {
@@ -92,7 +92,7 @@ module.exports = React.createClass({
   },
   __onDataCreated: function __onDataCreated(data, lifycycle) {
     this.data = data;
-    this.props.onDataCreated && this.props.onDataCreated(data, this);
+    this.props.onDataCreated && this.props.onDataCreated(data, this, lifycycle);
   },
   refresh: function refresh() {
     if (this.data) {
@@ -103,8 +103,8 @@ module.exports = React.createClass({
     return this;
   },
   refreshHeaders: function refreshHeaders() {
-    if (this._columns) {
-      this._columns.refresh();
+    if (this.columns) {
+      this.columns.refresh();
     }
 
     return this;
@@ -159,7 +159,7 @@ module.exports = React.createClass({
     })), !!this.props.tfilter && /*#__PURE__*/React.createElement(table.TFilter, _extends({
       onFilter: this.__onFilter,
       columns: columns
-    }, this.props.filter, {
+    }, this.props.tfilter, {
       table: this
     })), (this.props.tbody || this.props.data) && this.__renderTBody(columns), !!this.props.tfoot && /*#__PURE__*/React.createElement(table.TFoot, _extends({
       columns: columns
@@ -237,27 +237,29 @@ module.exports = React.createClass({
     }
   },
   __columnsLoaded: function __columnsLoaded(columns) {
-    var _temp = null,
-        _result = null,
-        _columnIterator = this.props.columnIterator,
-        _columns = columns.map(function (column) {
-      _temp = zn.deepAssign({}, column);
-      _result = _columnIterator && _columnIterator(_temp, this);
-      if (_result === false) return null;
-      if (_typeof(_result) == 'object') return _result;
-      return _temp;
-    }.bind(this));
+    if (columns && zn.is(columns, 'array')) {
+      var _temp = null,
+          _result = null,
+          _columnIterator = this.props.columnIterator,
+          _columns = columns.map(function (column) {
+        _temp = zn.deepAssign({}, column);
+        _result = _columnIterator && _columnIterator(_temp, this);
+        if (_result === false) return null;
+        if (_typeof(_result) == 'object') return _result;
+        return _temp;
+      }.bind(this));
 
-    this.__initCheckbox(_columns);
+      this.__initCheckbox(_columns);
 
-    this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);
-    this.setState({
-      columns: _columns
-    });
+      this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);
+      this.setState({
+        columns: _columns
+      });
+    }
   },
   __onColumnDataCreated: function __onColumnDataCreated(data, lifecycle) {
-    this._columns = data;
-    this.props.onDataCreated && this.props.onDataCreated(data, lifecycle, this);
+    this.columns = data;
+    this.props.onColumnsCreated && this.props.onColumnsCreated(data, this, lifecycle);
   },
   render: function render() {
     return /*#__PURE__*/React.createElement(znui.react.DataLifecycle, {

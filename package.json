@@ -29,8 +29,8 @@
   "email": "xuyy0618@qq.com",
   "license": "MIT",
   "dependencies": {
-    "rt-json-editor": "latest",
     "znui-react": "latest",
+    "znui-react-json": "latest",
     "znui-react-filter": "latest",
     "znui-react-icon": "latest",
     "znui-react-input": "latest",

@@ -44,7 +44,7 @@ module.exports = React.createClass({
 		this.forceUpdate();
 	},
 	__onFilter: function (filter){
-		console.log(filter, this.state.data);
+		this.props.onFilterChange && this.props.onFilterChange(filter, this.state.data, this);
 	},
 	__tbodyDataRender: function (columns){
 		return <table.TBody {...this.props.tbody} columns={columns} data={this.state.data} table={this} />;
@@ -66,7 +66,7 @@ module.exports = React.createClass({
 	},
 	__onDataCreated: function (data, lifycycle){
 		this.data = data;
-		this.props.onDataCreated && this.props.onDataCreated(data, this);
+		this.props.onDataCreated && this.props.onDataCreated(data, this, lifycycle);
 	},
 	refresh: function (){
 		if(this.data){
@@ -77,8 +77,8 @@ module.exports = React.createClass({
 		return this;
 	},
 	refreshHeaders: function (){
-		if(this._columns){
-			this._columns.refresh();
+		if(this.columns){
+			this.columns.refresh();
 		}
 
 		return this;
@@ -107,7 +107,7 @@ module.exports = React.createClass({
 				{ !!this.props.caption && <caption className={this.props.caption.className} style={this.props.caption.style}>{this.props.caption.render}</caption> }
 				{ !!this.props.colgroup && <table.Colgroup keyMapping={this.props.keyMapping} columns={columns} {...this.props.colgroup} /> }
 				{ !!this.props.thead && <table.THead onSort={this.__onSort} onColumnChange={this.__onTHeadColumnChange} columns={columns} keyMapping={this.props.keyMapping} {...this.props.thead} table={this} />}
-				{ !!this.props.tfilter && <table.TFilter onFilter={this.__onFilter} columns={columns} {...this.props.filter} table={this} />}
+				{ !!this.props.tfilter && <table.TFilter onFilter={this.__onFilter} columns={columns} {...this.props.tfilter} table={this} />}
 				{ (this.props.tbody || this.props.data) && this.__renderTBody(columns) }
 				{ !!this.props.tfoot && <table.TFoot columns={columns} {...this.props.tfoot} table={this} />}
 				{ this.props.childrenRender && this.props.childrenRender(columns, this) }
@@ -167,24 +167,26 @@ module.exports = React.createClass({
 		}
 	},
 	__columnsLoaded: function (columns){
-		var _temp = null,
-			_result = null,
-			_columnIterator = this.props.columnIterator,
-			_columns = columns.map(function (column){
-				_temp = zn.deepAssign({}, column);
-				_result = _columnIterator && _columnIterator(_temp, this);
-				if(_result === false) return null;
-				if(typeof _result == 'object') return _result;
+		if(columns && zn.is(columns, 'array')){
+			var _temp = null,
+				_result = null,
+				_columnIterator = this.props.columnIterator,
+				_columns = columns.map(function (column){
+					_temp = zn.deepAssign({}, column);
+					_result = _columnIterator && _columnIterator(_temp, this);
+					if(_result === false) return null;
+					if(typeof _result == 'object') return _result;
 
-				return _temp;
-			}.bind(this));
-		this.__initCheckbox(_columns);
-		this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);
-		this.setState({ columns: _columns });
+					return _temp;
+				}.bind(this));
+			this.__initCheckbox(_columns);
+			this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);
+			this.setState({ columns: _columns });
+		}
 	},
 	__onColumnDataCreated: function (data, lifecycle){
-		this._columns = data;
-		this.props.onDataCreated && this.props.onDataCreated(data, lifecycle, this);
+		this.columns = data;
+		this.props.onColumnsCreated && this.props.onColumnsCreated(data, this, lifecycle);
 	},
 	render: function(){
 		return <znui.react.DataLifecycle

@@ -20,7 +20,7 @@ var _items = [
         sort: true, 
         filter: { type: 'Input', opts: ['%'] }
     },
-    { label: '性别', name: 'sex', width: 240, filter: { type: zn.CustomerSearcher, opts: ['='] }  },
+    { label: '性别', name: 'sex', width: 240, filter: { type: "Input", opts: ['='] }  },
     { label: '年龄', name: 'age', width: 180, sort: true, filter: { type: 'Input', opts: ['%'] } },
     { 
         label: '备注', 
@@ -79,14 +79,14 @@ var _table1 = {
     cellPadding: 10,
     className: "zr-table-class-normal",
     fixed: true,
+    tfilter: {
+
+    },
     thead: {
         filter: true
     },
     tbody: {
         data: _data
-    },
-    pager: {
-
     }
 };
 

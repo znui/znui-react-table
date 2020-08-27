@@ -123,6 +123,7 @@
 }
 .zr-table-pager .table-pager {
   border-top: 1px solid #e6e6e6;
+  line-height: 28px;
 }
 .zr-table-pager .table-pager .pager-row td {
   padding: 0px;
@@ -158,7 +159,7 @@
   border-right: none;
 }
 .zr-table-class-normal .zr-table-tfilter {
-  background-color: #fbf0f0;
+  background-color: rgba(249, 243, 243, 0.6);
 }
 .zr-table-class-normal .zr-table-tfilter tr {
   position: relative;

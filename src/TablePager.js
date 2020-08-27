@@ -22,7 +22,9 @@ module.exports = React.createClass({
 	setPageIndex: function (pageIndex){
 		if(this.data){
 			this.state.pageIndex = pageIndex;
+			this.state.current = pageIndex;
 			this.forceUpdate();
+			this.data._argv = this.__onDataInitial(this.props.data);
 			this.data.refresh();
 		}
 	},
@@ -32,6 +34,7 @@ module.exports = React.createClass({
 			return null;
 		}
 		var _state = this.state,
+			_element = null,
 			_pagerProps = {
 				total: _state.total,
 				count: _state.count,
@@ -41,11 +44,15 @@ module.exports = React.createClass({
 			_Component = this.props.pager || pager.Pager;
 		if(zn.is(_Component, 'string')){
 			_Component = zn.path(window, _Component);
+		}else if(zn.is(_Component, 'object') && _Component.component){
+			_element = znui.react.createReactElement(_Component.component, zn.extend({}, _Component, _pagerProps));
 		}
 
-		var _element = znui.react.createReactElement(this.props.pagerRender, _pagerProps);
+		if(this.props.pagerRender){
+			_element = znui.react.createReactElement(this.props.pagerRender, _pagerProps);
+		}
 
-		if(!_element){
+		if(!_element && _Component && zn.is(_Component, 'function')){
 		 	_element = <_Component {..._pagerProps} />;
 		}
 
@@ -85,18 +92,43 @@ module.exports = React.createClass({
 		this.data = data;
 		this.props.onDataCreated && this.props.onDataCreated(data, table, this);
 	},
-	__onDataLoaded: function (response, table){
-		var _data = response.data;
-		var _return = this.props.onDataLoaded && this.props.onDataLoaded(_data, table, this);
-		if(_return !== false){
-			table.setState({
-				data: _data[this.state.keyMaps.data]
-			});
-			this.setState({
-				total: Math.ceil(_data[this.state.keyMaps.total]/this.props.pageSize),
-				count: _data[this.state.keyMaps.total],
-				current: _data[this.state.keyMaps.pageIndex],
-			});
+	__onDataLoaded: function (data, table){
+		if(this.props.zxnz){
+			if(zn.is(data, 'object') && data.code != 200){
+				return console.error(data.detail), false;
+			}
+			if(!zn.is(data, 'array')){
+				return console.error("TablePager Component Data Type Error."), false;
+			}
+			var _data = data[0],
+				_pagerCount = data[1][0].count;
+			var _return = this.props.onDataLoaded && this.props.onDataLoaded(_data, table, this);
+			if(_return !== false){
+				table.setState({
+					data: _data
+				});
+				this.setState({
+					total: Math.ceil(_pagerCount/this.props.pageSize),
+					count: _pagerCount,
+					current: this.state.current,
+				});
+			}
+		}else{
+			if(zn.is(data, 'array')){
+				return console.error('The data is array, but it need return object'), false;
+			}
+			var _data = data.data;
+			var _return = this.props.onDataLoaded && this.props.onDataLoaded(_data, table, this);
+			if(_return !== false){
+				table.setState({
+					data: _data[this.state.keyMaps.data]
+				});
+				this.setState({
+					total: Math.ceil(_data[this.state.keyMaps.total]/this.props.pageSize),
+					count: _data[this.state.keyMaps.total],
+					current: _data[this.state.keyMaps.pageIndex],
+				});
+			}
 		}
 
 		return false;

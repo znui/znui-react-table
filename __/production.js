@@ -6,8 +6,8 @@ module.exports = require(_path + 'znui-react/webpack').component.production(func
         externals: {
             "react": "React",
             "react-dom": "ReactDOM",
-            "rt-json-editor": "jsoneditor",
             "znui-react": "zr",
+            "znui-react-json": "json",
             "znui-react-filter": "filter",
             "znui-react-icon": "icon",
             "znui-react-input": "input",

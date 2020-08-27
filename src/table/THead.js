@@ -2,7 +2,7 @@ var React = znui.React || require('react');
 var THeadSort = require('./THeadSort');
 var popup = require('znui-react-popup');
 var SVGIcon = require('znui-react-icon').SVGIcon;
-var jsoneditor = require('rt-json-editor');
+var zrjson = require('znui-react-json');
 module.exports = React.createClass({
 	displayName:'THead',
 	getDefaultProps: function (){
@@ -27,8 +27,9 @@ module.exports = React.createClass({
 		this.props.onColumnChange && this.props.onColumnChange(_root.state.value, index);
     },
 	__iconClickRender: function (column, index){
+		
 		return <div style={{padding: 10, maxHeight: 500, width: 400, overflow: 'auto'}}>
-			<jsoneditor.form.object fold={false}
+			<zrjson.editor.object fold={false}
 				displayClosure={true} 
 				displayItemCount={true} 
 				label={'Column'} 

@@ -8,7 +8,7 @@ var popup = require('znui-react-popup');
 
 var SVGIcon = require('znui-react-icon').SVGIcon;
 
-var jsoneditor = require('rt-json-editor');
+var zrjson = require('znui-react-json');
 
 module.exports = React.createClass({
   displayName: 'THead',
@@ -45,7 +45,7 @@ module.exports = React.createClass({
         width: 400,
         overflow: 'auto'
       }
-    }, /*#__PURE__*/React.createElement(jsoneditor.form.object, {
+    }, /*#__PURE__*/React.createElement(zrjson.editor.object, {
       fold: false,
       displayClosure: true,
       displayItemCount: true,
