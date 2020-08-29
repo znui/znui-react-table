@@ -9,7 +9,6 @@ module.exports = require(_path + 'znui-react/webpack').component.development(fun
             "znui-react": "zr",
             "znui-react-json": "json",
             "znui-react-filter": "filter",
-            "znui-react-icon": "icon",
             "znui-react-input": "input",
             "znui-react-loader": "input",
             "znui-react-pager": "pager",

@@ -1,6 +1,6 @@
 {
   "name": "znui-react-table",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "Web table component.",
   "main": "index.js",
   "scripts": {
@@ -32,7 +32,6 @@
     "znui-react": "latest",
     "znui-react-json": "latest",
     "znui-react-filter": "latest",
-    "znui-react-icon": "latest",
     "znui-react-input": "latest",
     "znui-react-loader": "latest",
     "znui-react-pager": "latest",

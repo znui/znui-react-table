@@ -14,9 +14,14 @@
         background-color: @thead-background-color;
         .thead-cell{
             position: relative;
+            padding: 6px;
             border: 1px solid @thead-border-color;
             .cell-label{
                 text-align: left;
+                .cell-editor{
+                    display: inline-grid !important;
+                    margin: 2px;
+                }
             }
             .cell-sort{
                 position: absolute;

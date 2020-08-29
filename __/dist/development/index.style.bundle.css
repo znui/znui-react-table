@@ -71,10 +71,12 @@
 .zr-table-thead .thead-label .thead-th {
   position: relative;
 }
-.zr-table-thead .thead-label .thead-th .th-label svg {
+.zr-table-thead .thead-label .thead-th .th-label .icon {
   font-size: 10px;
   margin-left: 3px;
   cursor: pointer;
+  width: 16px;
+  height: 16px;
 }
 .zr-table-thead .thead-label .thead-th .th-sort {
   position: absolute;
@@ -86,6 +88,10 @@
   align-items: center;
   width: 24px;
   cursor: pointer;
+}
+.zr-table-thead .icon {
+  width: 16px;
+  height: 16px;
 }
 .zr-table-tbody .tbody-empty .empty-content {
   font-size: 16px;
@@ -126,7 +132,7 @@
   line-height: 28px;
 }
 .zr-table-pager .table-pager .pager-row td {
-  padding: 0px;
+  padding: 3px;
   margin: 0px;
 }
 .zr-table-class-normal {
@@ -143,10 +149,14 @@
 }
 .zr-table-class-normal .zr-table-thead .thead-cell {
   position: relative;
+  padding: 6px;
   border: 1px solid #e6e6e6;
 }
 .zr-table-class-normal .zr-table-thead .thead-cell .cell-label {
   text-align: left;
+}
+.zr-table-class-normal .zr-table-thead .thead-cell .cell-label .cell-editor {
+  display: inline-grid !important;
 }
 .zr-table-class-normal .zr-table-thead .thead-cell .cell-sort {
   position: absolute;
@@ -216,10 +226,15 @@
 }
 .zr-table-class-editor .zr-table-thead .thead-cell {
   position: relative;
+  padding: 6px;
   border: 1px solid #e6e6e6;
 }
 .zr-table-class-editor .zr-table-thead .thead-cell .cell-label {
   text-align: left;
+}
+.zr-table-class-editor .zr-table-thead .thead-cell .cell-label .cell-editor {
+  display: inline-grid !important;
+  margin: 2px;
 }
 .zr-table-class-editor .zr-table-thead .thead-cell .cell-sort {
   position: absolute;
