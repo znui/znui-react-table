@@ -82,7 +82,8 @@ module.exports = React.createClass({
 
     if (!_content) {
       _content = /*#__PURE__*/React.createElement("div", {
-        className: "cell-label"
+        className: "cell-label",
+        title: _label
       }, _label, !!column.editable && /*#__PURE__*/React.createElement(popup.Dropdown, {
         className: "cell-editor",
         popover: {

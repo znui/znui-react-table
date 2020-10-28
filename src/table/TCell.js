@@ -36,7 +36,7 @@ module.exports = React.createClass({
 			return _render;
 		}
 
-		return _value;
+		return <div className="cell-label" title={_value}>{_value}</div>;
 	},
 	__cellClick: function (event){
 		event.data = {

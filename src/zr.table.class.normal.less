@@ -14,9 +14,14 @@
         .thead-cell{
             position: relative;
             padding: 6px;
-            border: 1px solid @thead-border-color;
+            border-left: 1px solid @thead-border-color;
+            border-bottom: 1px solid @thead-border-color;
+            &:first-child{
+                border-left: none;
+            }
             .cell-label{
                 text-align: left;
+                color: #04488e;
                 .cell-editor{
                     display: inline-grid !important;
                 }
@@ -75,7 +80,8 @@
         &>th, &>td{
             position: relative;
             border: none;
-            border: 1px solid @thead-border-color;
+            border-left: 1px solid @thead-border-color;
+            border-top: 1px solid @thead-border-color;
             text-align: left;
             padding: 0px 6px;
             line-height: 30px;
@@ -83,6 +89,9 @@
             white-space: nowrap;
             text-overflow: ellipsis;
             vertical-align: middle;
+            &:first-child{
+                border-left: none;
+            }
         }
     }
 }

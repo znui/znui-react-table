@@ -40,7 +40,10 @@ module.exports = React.createClass({
       return _render;
     }
 
-    return _value;
+    return /*#__PURE__*/React.createElement("div", {
+      className: "cell-label",
+      title: _value
+    }, _value);
   },
   __cellClick: function __cellClick(event) {
     event.data = {

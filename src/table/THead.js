@@ -56,7 +56,7 @@ module.exports = React.createClass({
 			_labelKey = _mapping['label'] || 'label',
 			_label = column[_labelKey];
 		if(!_content) {
-			_content = <div className="cell-label">
+			_content = <div className="cell-label" title={_label}>
 				{ _label }
 				{ 
 					!!column.editable && <popup.Dropdown 
