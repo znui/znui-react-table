@@ -26,7 +26,6 @@ module.exports = React.createClass({
 		this.props.onColumnChange && this.props.onColumnChange(_root.state.value, index);
     },
 	__iconClickRender: function (column, index){
-		
 		return <div style={{padding: 10, maxHeight: 500, width: 400, overflow: 'auto'}}>
 			<zrjson.editor.object fold={false}
 				displayClosure={true} 
@@ -50,13 +49,15 @@ module.exports = React.createClass({
 		var _content = znui.react.createReactElement(column.render || column.head, {
 				column: column,
 				cellIndex: index, 
-				thead: this
+				thead: this,
+				table: this.props.table
 			}),
 			_mapping = this.props.keyMapping || {},
 			_labelKey = _mapping['label'] || 'label',
 			_label = column[_labelKey];
 		if(!_content) {
 			_content = <div className="cell-label" title={_label}>
+				{ !!column.required && <span data-zr-popup-tooltip="必要字段" className="required">*</span>}
 				{ _label }
 				{ 
 					!!column.editable && <popup.Dropdown 
@@ -71,7 +72,7 @@ module.exports = React.createClass({
 			</div>;
 		}
 
-		var _cell = zn.extend({ style: {}, className: '' }, this.props.cell);
+		var _cell = zn.extend({ style: {}, className: '' }, this.props.cell, column);
 		return <th key={index} className={znui.react.classname('thead-cell', _cell.className)} style={_cell.style}>
 			{ _content }
 			{ !!column.sort && <THeadSort className="cell-sort" onSort={(sort)=>this.__onColumnSort(sort, column)} />}

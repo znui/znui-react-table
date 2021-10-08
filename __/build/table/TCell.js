@@ -33,8 +33,9 @@ module.exports = React.createClass({
       value: _value,
       tcell: this,
       trow: this.props.trow,
-      tbody: this.props.tbody
-    });
+      tbody: this.props.tbody,
+      table: this.props.tbody.props.table
+    }, this.props.context);
 
     if (_render) {
       return _render;
@@ -46,8 +47,12 @@ module.exports = React.createClass({
     }, _value);
   },
   __cellClick: function __cellClick(event) {
+    var _this = this;
+
     event.data = {
-      td: ReactDOM.findDOMNode(this),
+      findTDDOM: function findTDDOM() {
+        return ReactDOM.findDOMNode(_this);
+      },
       tcell: this
     };
     this.props.onClick && this.props.onClick(event);

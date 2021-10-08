@@ -13,19 +13,27 @@ module.exports = React.createClass({
 			pageIndex: this.props.pageIndex || 1
 		};
 	},
-	__handlePageChanged: function (newPage){
-		var _return = this.props.onPageChanged && this.props.onPageChanged(newPage, this);
-		if(_return !== false) {
-			this.setPageIndex(newPage);
-		}
+	componentDidMount: function(){
+		this.props.onComponentDidMount && this.props.onComponentDidMount(this);
 	},
-	setPageIndex: function (pageIndex){
+	setPageIndex: function (pageIndex, callback){
 		if(this.data){
 			this.state.pageIndex = pageIndex;
 			this.state.current = pageIndex;
 			this.forceUpdate();
 			this.data._argv = this.__onDataInitial(this.props.data);
-			this.data.refresh();
+			this.data.refresh(callback);
+		}
+	},
+	refresh: function (callback){
+		if(this._table){
+			this._table.refresh(callback);
+		}
+	},
+	__handlePageChanged: function (newPage){
+		var _return = this.props.onPageChanged && this.props.onPageChanged(newPage, this);
+		if(_return !== false) {
+			this.setPageIndex(newPage);
 		}
 	},
 	__renderPager: function (columns, table){
@@ -97,6 +105,9 @@ module.exports = React.createClass({
 			if(zn.is(data, 'object') && data.code != 200){
 				return console.error(data.detail), false;
 			}
+			if(zn.is(data, 'object') && data.code == 200){
+				data = data.result;
+			}
 			if(!zn.is(data, 'array')){
 				return console.error("TablePager Component Data Type Error."), false;
 			}
@@ -133,10 +144,27 @@ module.exports = React.createClass({
 
 		return false;
 	},
+	__onFilterChange: function (filters, data, table){
+		var _return = this.props.onFilterChange && this.props.onFilterChange(filters, data, table);
+		if(_return !== false){
+			if(!this.data._argv.data) {
+				this.data._argv.data = {};
+			}
+			this.data._argv.data.filters = filters;
+			this.setPageIndex(1);
+		}
+
+		return false;
+	},
 	render: function(){
 		return (
-			<Table {...this.props} className={znui.react.classname('zr-table-pager', this.props.className)} 
+			<Table {...this.props} 
+				className={znui.react.classname('zr-table-pager', this.props.className)} 
 				childrenRender={this.__renderPager}
+				onComponentDidMount={(table)=>{ 
+					this._table = table; 
+				}}
+				onFilterChange={this.__onFilterChange}
 				onDataInitial={this.__onDataInitial}
 				onDataCreated={this.__onDataCreated}
 				onDataLoaded={this.__onDataLoaded} />

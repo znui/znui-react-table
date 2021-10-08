@@ -87,6 +87,10 @@
   text-overflow: ellipsis;
   word-break: keep-all;
 }
+.zr-table-thead .cell-label .required {
+  color: #ef0707;
+  padding: 2px;
+}
 .zr-table-thead .thead-label .thead-th {
   position: relative;
 }
@@ -127,6 +131,45 @@
   height: 32px;
   margin: 5px;
 }
+.zr-table-tbody .tbody-pages .data-page {
+  display: flex;
+  align-items: center;
+}
+.zr-table-tbody .tbody-pages .data-page .page-count {
+  font-size: 12px;
+  padding: 2px 10px;
+  color: #04488e;
+}
+.zr-table-tbody .tbody-pages .data-page .pages .page {
+  background-color: #efefef;
+  font-size: 12px;
+  padding: 6px;
+  cursor: pointer;
+  border: 1px solid #e6e6e6;
+  margin-left: -1px;
+  min-width: 14px;
+  display: inline-block;
+  text-align: center;
+}
+.zr-table-tbody .tbody-pages .data-page .pages .page.active {
+  color: #2e649e;
+  background-color: #f9f9f9;
+}
+.zr-table-tbody-empty .tbody-empty .empty-content {
+  font-size: 14px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: monospace;
+  color: #c5c4c4;
+}
+.zr-table-tbody-empty .tbody-empty .empty-content svg {
+  width: 32px;
+  height: 32px;
+  margin: 5px;
+}
 .zr-table-tfoot .tfoot-row .tfoot-cell {
   text-align: left;
   font-weight: normal;
@@ -135,10 +178,17 @@
   padding: 0px !important;
 }
 .zr-table-tfilter td {
-  padding: 1px !important;
+  padding: 0px !important;
+  cursor: not-allowed;
 }
-.zr-table-tfilter td input {
+.zr-table-tfilter td input,
+.zr-table-tfilter td select {
   border-radius: 0px !important;
+}
+.zr-table-tfilter .zr-popup-select .select-text,
+.zr-table-tfilter select,
+.zr-table-tfilter input {
+  border: none !important;
 }
 .zr-table {
   border-collapse: collapse;
@@ -190,6 +240,9 @@
 .zr-table-class-normal .zr-table-thead .thead-cell .cell-label .cell-editor {
   display: inline-grid !important;
 }
+.zr-table-class-normal .zr-table-thead .thead-cell .cell-label .required {
+  color: #d95350;
+}
 .zr-table-class-normal .zr-table-thead .thead-cell .cell-sort {
   position: absolute;
   top: 0px;
@@ -217,9 +270,12 @@
   background-color: #f9f9f9;
 }
 .zr-table-class-normal .zr-table-tbody > .zr-table-trow[data-active="true"] {
+  color: #1a73e8;
   border-left: 0px;
   border-right: 0px;
-  background-color: #efefef !important;
+  background-color: #f5f8fd;
+  box-shadow: 0 0 5px #e9eff9;
+  border-collapse: separate;
 }
 .zr-table-class-normal .zr-table-tbody > .zr-table-trow:hover {
   color: #59a5c9;
@@ -238,7 +294,7 @@
   border-left: 1px solid #e6e6e6;
   border-top: 1px solid #e6e6e6;
   text-align: left;
-  padding: 0px 6px;
+  padding: 3px;
   line-height: 30px;
   overflow: hidden;
   white-space: nowrap;
@@ -253,6 +309,7 @@
   background-color: #FFF;
   border: 1px solid #e6e6e6;
   border-collapse: collapse;
+  width: 100%;
 }
 .zr-table-class-editor .zr-table-thead {
   display: table-header-group;
@@ -281,7 +338,7 @@
   cursor: pointer;
 }
 .zr-table-class-editor .zr-table-tfilter {
-  background-color: #fbf0f0;
+  background-color: rgba(249, 243, 243, 0.6);
 }
 .zr-table-class-editor .zr-table-tfilter tr {
   position: relative;
@@ -328,8 +385,8 @@
 .zr-table-class-editor .zr-table-trow > th textarea,
 .zr-table-class-editor .zr-table-trow > td textarea {
   width: 100%;
-  height: 30px;
-  line-height: 30px;
+  height: 33px;
+  line-height: 33px;
   border: none;
   background-color: transparent !important;
 }

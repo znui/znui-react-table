@@ -11,18 +11,30 @@ var loader = require('znui-react-loader');
 module.exports = React.createClass({
   displayName: 'ZRTBody',
   getInitialState: function getInitialState() {
+    var _pageSize = this.props.pageSize || 50;
+
     return {
       active: null,
       checkeds: [],
       className: '',
+      pageIndex: this.props.pageIndex || 1,
+      pageSize: _pageSize,
+      pageCount: Math.ceil(this.props.data.length / _pageSize),
       style: {},
       loading: false
     };
   },
+  __getData: function __getData(pageIndex, pageSize) {
+    var _pageIndex = pageIndex || this.state.pageIndex;
+
+    var _pageSize = pageSize || this.state.pageSize;
+
+    return this.props.data.slice((_pageIndex - 1) * _pageSize, Math.min(_pageIndex * _pageSize, this.props.data.length));
+  },
   __renderLoading: function __renderLoading() {
     var _element = znui.react.createReactElement(this.props.loadingRender, {
       tbody: this
-    });
+    }, this.props.context);
 
     if (!_element) {
       _element = /*#__PURE__*/React.createElement(loader.DataLoader, {
@@ -46,7 +58,7 @@ module.exports = React.createClass({
   __renderEmpty: function __renderEmpty() {
     var _element = znui.react.createReactElement(this.props.emptyRender, {
       tbody: this
-    });
+    }, this.props.context);
 
     if (!_element) {
       _element = /*#__PURE__*/React.createElement("div", {
@@ -95,7 +107,7 @@ module.exports = React.createClass({
       return null;
     }
 
-    var _temp = this.props.eachRowData && this.props.eachRowData(item, index);
+    var _temp = this.props.eachRowData && this.props.eachRowData(item, index, this);
 
     if (_temp && zn.is(_temp, 'object')) {
       item = _temp;
@@ -105,14 +117,19 @@ module.exports = React.createClass({
       data: item,
       rowIndex: index,
       tbody: this
-    });
+    }, this.props.context);
 
     if (_element) {
       return _element;
     }
 
+    var _rowKey = this.props.rowKey;
+
+    var _key = item[_rowKey] || index;
+
     return /*#__PURE__*/React.createElement(TRow, _extends({
-      key: index
+      key: _key,
+      context: this.props.context
     }, this.props.row, {
       cell: this.props.cell,
       cellRender: this.props.cellRender,
@@ -125,9 +142,50 @@ module.exports = React.createClass({
       onCellClick: this.__onCellClick
     }));
   },
+  __pageChange: function __pageChange(pageIndex) {
+    this.setState({
+      pageIndex: pageIndex
+    });
+  },
+  __pagesRender: function __pagesRender() {
+    var _this = this;
+
+    var _pageCount = this.state.pageCount,
+        _pages = [];
+
+    if (_pageCount > 1) {
+      for (var i = 1; i < _pageCount + 1; i++) {
+        _pages.push(i);
+      }
+
+      return /*#__PURE__*/React.createElement("tr", {
+        className: znui.react.classname("tbody-pages", '')
+      }, /*#__PURE__*/React.createElement("td", {
+        colSpan: this.props.columns.length
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "data-page"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "pages"
+      }, _pages.map(function (i, index) {
+        return /*#__PURE__*/React.createElement("span", {
+          key: index,
+          className: 'page ' + (_this.state.pageIndex == i ? 'active' : ''),
+          onClick: function onClick() {
+            return _this.__pageChange(i);
+          }
+        }, i);
+      })), /*#__PURE__*/React.createElement("span", {
+        className: "page-count"
+      }, "\u5171 ", this.props.data.length, " \u6761"))));
+    }
+  },
   __renderData: function __renderData() {
     if (this.props.data == null || this.props.data && !this.props.data.length) {
       return this.__renderEmpty();
+    }
+
+    if (this.state.pageCount > 1) {
+      return /*#__PURE__*/React.createElement(React.Fragment, null, this.__pagesRender(), this.__getData(this.state.pageIndex, this.state.pageSize).map(this.__renderRow));
     }
 
     return /*#__PURE__*/React.createElement(React.Fragment, null, this.props.data.map(this.__renderRow));

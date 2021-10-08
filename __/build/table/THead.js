@@ -74,7 +74,8 @@ module.exports = React.createClass({
     var _content = znui.react.createReactElement(column.render || column.head, {
       column: column,
       cellIndex: index,
-      thead: this
+      thead: this,
+      table: this.props.table
     }),
         _mapping = this.props.keyMapping || {},
         _labelKey = _mapping['label'] || 'label',
@@ -84,7 +85,10 @@ module.exports = React.createClass({
       _content = /*#__PURE__*/React.createElement("div", {
         className: "cell-label",
         title: _label
-      }, _label, !!column.editable && /*#__PURE__*/React.createElement(popup.Dropdown, {
+      }, !!column.required && /*#__PURE__*/React.createElement("span", {
+        "data-zr-popup-tooltip": "\u5FC5\u8981\u5B57\u6BB5",
+        className: "required"
+      }, "*"), _label, !!column.editable && /*#__PURE__*/React.createElement(popup.Dropdown, {
         className: "cell-editor",
         popover: {
           render: this.__iconClickRender(column, index),
@@ -108,7 +112,7 @@ module.exports = React.createClass({
     var _cell = zn.extend({
       style: {},
       className: ''
-    }, this.props.cell);
+    }, this.props.cell, column);
 
     return /*#__PURE__*/React.createElement("th", {
       key: index,

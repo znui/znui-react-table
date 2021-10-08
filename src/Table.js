@@ -4,12 +4,21 @@ var selector = require('znui-react-selector');
 
 module.exports = React.createClass({
 	displayName:'ZRTable',
+	getDefaultProps: function (){
+		return {
+			valueKey: 'zxnz_UUID',
+			rowKey: 'zxnz_UUID'
+		};
+	},
 	getInitialState: function (){
 		return {
 			data: [], 
 			columns: [],
 			checkeds: []
 		};
+	},
+	componentDidMount: function(){
+		this.props.onComponentDidMount && this.props.onComponentDidMount(this);
 	},
 	__sortFunction: function (next, prev, key, _sort){
 		if(this.props.sortFunction) {
@@ -43,14 +52,35 @@ module.exports = React.createClass({
 
 		this.forceUpdate();
 	},
-	__onFilter: function (filter){
-		this.props.onFilterChange && this.props.onFilterChange(filter, this.state.data, this);
+	__onFilter: function (filters){
+		var _return = this.props.onFilterChange && this.props.onFilterChange(filters, this.state.data, this);
+		if(_return !== false){
+			if(this.data && zn.isZNObject(this.data)) {
+				if(!this.data._argv.data) {
+					this.data._argv.data = {};
+				}
+				this.data._argv.data.filters = filters;
+				this.data.refresh();
+			}
+		}
+	},
+	__onTBodyEachRowData: function (data, index, tbody){
+		var _valueKey = this.props.valueKey || 'zxnz_UUID';
+		if(this.props.checkbox && this.props.value && _valueKey) {
+			var _value = data[_valueKey];
+			if(this.props.value.indexOf(_value)!=-1){
+				this.state.checkeds.push(_value);
+			}
+		}
 	},
 	__tbodyDataRender: function (columns){
-		return <table.TBody {...this.props.tbody} columns={columns} data={this.state.data} table={this} />;
+		if(!this.state.data.length){
+			return <table.TBodyEmpty context={this.props.context} {...this.props.tbody} columns={columns} data={this.state.data} table={this} />;
+		}
+		return <table.TBody rowKey={this.props.rowKey} context={this.props.context} eachRowData={this.__onTBodyEachRowData} {...this.props.tbody} columns={columns} data={this.state.data} table={this} />;
 	},
 	__tbodyLoadingRender: function (columns){
-		return <table.TBody {...this.props.tbody} columns={columns} loading={true} table={this} />;
+		return <table.TBody rowKey={this.props.rowKey} context={this.props.context} {...this.props.tbody} columns={columns} loading={true} table={this} />;
 	},
 	__onTHeadColumnChange: function (data, index){
 		if(this.state.columns){
@@ -61,6 +91,9 @@ module.exports = React.createClass({
 	__tbodyDataLoaded: function (data) {
 		var _return = this.props.onDataLoaded && this.props.onDataLoaded(data, this);
 		if(_return !== false){
+			if(zn.is(data, 'object') && data.result){
+				data = data.result;
+			}
 			this.setState({ data: data });
 		}
 	},
@@ -68,11 +101,14 @@ module.exports = React.createClass({
 		this.data = data;
 		this.props.onDataCreated && this.props.onDataCreated(data, this, lifycycle);
 	},
-	refresh: function (){
+	refresh: function (callback){
+		this.setState({
+			checkeds: []
+		});
 		if(this.data){
-			this.state.checkeds = [];
 			this.data.refresh();
 		}
+		callback && callback();
 
 		return this;
 	},
@@ -91,6 +127,7 @@ module.exports = React.createClass({
 		}
 		return <znui.react.DataLifecycle data={_data} 
 					dataRender={()=>this.__tbodyDataRender(columns)} 
+					loadingEnabled={this.props.loadingEnabled||false}
 					loadingRender={()=>this.__tbodyLoadingRender(columns)}
 					responseHandler={this.props.responseHandler}
 					onDataCreated={this.__onDataCreated}
@@ -105,17 +142,47 @@ module.exports = React.createClass({
 				cellPadding={this.props.cellPadding || 0} 
 				cellSpacing={this.props.cellSpacing || 0} {...this.props.attrs}>
 				{ !!this.props.caption && <caption className={this.props.caption.className} style={this.props.caption.style}>{this.props.caption.render}</caption> }
-				{ !!this.props.colgroup && <table.Colgroup keyMapping={this.props.keyMapping} columns={columns} {...this.props.colgroup} /> }
-				{ !!this.props.thead && <table.THead onSort={this.__onSort} onColumnChange={this.__onTHeadColumnChange} columns={columns} keyMapping={this.props.keyMapping} {...this.props.thead} table={this} />}
-				{ !!this.props.tfilter && <table.TFilter onFilter={this.__onFilter} columns={columns} {...this.props.tfilter} table={this} />}
+				{ !!this.props.colgroup && <table.Colgroup context={this.props.context} keyMapping={this.props.keyMapping} columns={columns} {...this.props.colgroup} /> }
+				{ !!this.props.thead && <table.THead context={this.props.context} onSort={this.__onSort} onColumnChange={this.__onTHeadColumnChange} columns={columns} keyMapping={this.props.keyMapping} {...this.props.thead} table={this} />}
+				{ !!this.props.tfilter && <table.TFilter context={this.props.context} onFilter={this.__onFilter} columns={columns} {...this.props.tfilter} table={this} />}
 				{ (this.props.tbody || this.props.data) && this.__renderTBody(columns) }
-				{ !!this.props.tfoot && <table.TFoot columns={columns} {...this.props.tfoot} table={this} />}
+				{ !!this.props.tfoot && <table.TFoot context={this.props.context} columns={columns} {...this.props.tfoot} table={this} />}
 				{ this.props.childrenRender && this.props.childrenRender(columns, this) }
 				{ this.props.children }
 			</table>
 		);
 	},
+	__rowHeadCheckboxChecked: function (){
+		var _checkeds = this.state.checkeds, _valueKey = this.props.valueKey || 'zxnz_UUID';
+		if(!_checkeds.length) return false;
+		for(var item of this.state.data) {
+			if(_checkeds.indexOf(item[_valueKey]) == -1){
+				return false;
+			}
+		}
+
+		return true;
+	},
+	__onRowHeadCheckboxChange: function (event){
+		var _valueKey = this.props.valueKey || 'zxnz_UUID';
+		if(event.checked) {
+			for(var item of this.state.data) {
+				if(this.state.checkeds.indexOf(item[_valueKey]) == -1){
+					this.state.checkeds.push(item[_valueKey]);
+				}
+			}
+		}else{
+			for(var item of this.state.data) {
+				if(this.state.checkeds.indexOf(item[_valueKey]) != -1){
+					this.state.checkeds.splice(this.state.checkeds.indexOf(item[_valueKey]), 1);
+				}
+			}
+		}
+		this.forceUpdate();
+		this.props.onCheckboxChange && this.props.onCheckboxChange(this.state.checkeds, this);
+	},
 	__initCheckbox: function (columns){
+		var _valueKey = this.props.valueKey || 'zxnz_UUID';
 		var _checkbox = {
 				width: 60,
 				head: function (argv){
@@ -123,30 +190,22 @@ module.exports = React.createClass({
 					if(!_table) return;
 					return <selector.Checkbox
 								style={{ justifyContent: 'center' }}
-								key={this.state.checkeds.length}
+								key={zn.uuid()}
 								text={'(' + _table.state.checkeds.length +')'}
-								checked={!!_table.state.data.length && _table.state.checkeds.length === _table.state.data.length}
-								onChange={(event)=>{
-									if(event.checked) {
-										this.state.checkeds = this.state.data.slice(0);
-									}else{
-										this.state.checkeds = [];
-									}
-									this.forceUpdate();
-									this.props.onCheckboxChange && this.props.onCheckboxChange(this.state.checkeds, this);
-								}} />;
+								checked={this.__rowHeadCheckboxChecked()}
+								onChange={this.__onRowHeadCheckboxChange} />;
 				}.bind(this),
 				body: function (argv){
 					var _data = argv.data;
 					return <selector.UncontrolCheckbox 
 								style={{ justifyContent: 'center' }}
-								checked={this.state.checkeds.indexOf(_data) !== -1}
+								checked={this.state.checkeds.indexOf(_data[_valueKey]) !== -1}
 								onClick={(event, checkbox)=>{
 									event.stopPropagation();
 									if(checkbox.props.checked) {
-										this.state.checkeds.splice(this.state.checkeds.indexOf(_data), 1); 
+										this.state.checkeds.splice(this.state.checkeds.indexOf(_data[_valueKey]), 1); 
 									}else{
-										this.state.checkeds.push(_data);
+										this.state.checkeds.push(_data[_valueKey]);
 									}
 									this.forceUpdate();
 									this.props.onCheckboxChange && this.props.onCheckboxChange(this.state.checkeds, this);
@@ -187,6 +246,26 @@ module.exports = React.createClass({
 	__onColumnDataCreated: function (data, lifecycle){
 		this.columns = data;
 		this.props.onColumnsCreated && this.props.onColumnsCreated(data, this, lifecycle);
+	},
+	getData: function (){
+		return this.state.data;
+	},
+	removeRowData: function (data){
+		if(data) {
+			this.state.data.splice(this.state.data.indexOf(data), 1);
+			this.forceUpdate();
+		}
+
+		return this;
+	},
+	updateRowData: function (data){
+		if(data) {
+			var _index = this.state.data.indexOf(data);
+			this.state.data[_index] = data;
+			this.forceUpdate();
+		}
+		
+		return this;
 	},
 	render: function(){
 		return <znui.react.DataLifecycle

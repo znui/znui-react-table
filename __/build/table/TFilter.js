@@ -16,11 +16,16 @@ module.exports = React.createClass({
     };
   },
   __onFilterChange: function __onFilterChange(event) {
-    if (event.name && event.value) {
-      this.state.data[event.name] = {
-        value: event.value,
-        opt: event.opt
-      };
+    if (event.name) {
+      if (event.value) {
+        this.state.data[event.name] = {
+          value: event.value,
+          opt: event.opt
+        };
+      } else if (event.value === null || event.value === undefined) {
+        this.state.data[event.name] = null;
+        delete this.state.data[event.name];
+      }
     }
 
     this.props.onFilter && this.props.onFilter(this.state.data);
@@ -53,11 +58,28 @@ module.exports = React.createClass({
     });
 
     if (!_content && column.filter) {
-      _content = /*#__PURE__*/React.createElement(filter.FilterField, _extends({}, column.filter, {
-        name: column.name,
-        onFilterChange: this.__onFilterChange,
-        onCancel: this.__onFilterCancel
-      }));
+      var _filter = column.filter;
+
+      if (zn.is(_filter, 'function')) {
+        if (_filter.prototype && _filter.prototype.render) {
+          _content = znui.react.createReactElement(_filter, {
+            column: column,
+            tfilter: this
+          });
+        } else {
+          _filter = _filter.call(null, column, this);
+        }
+      }
+
+      if (zn.is(_filter, 'object')) {
+        _content = /*#__PURE__*/React.createElement(filter.FilterField, _extends({
+          key: zn.uuid()
+        }, _filter, {
+          name: column.name,
+          onFilterChange: this.__onFilterChange,
+          onCancel: this.__onFilterCancel
+        }));
+      }
     }
 
     var _cell = zn.extend({

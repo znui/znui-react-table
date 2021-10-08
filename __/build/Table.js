@@ -2,6 +2,12 @@
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 var React = znui.React || require('react');
@@ -12,12 +18,21 @@ var selector = require('znui-react-selector');
 
 module.exports = React.createClass({
   displayName: 'ZRTable',
+  getDefaultProps: function getDefaultProps() {
+    return {
+      valueKey: 'zxnz_UUID',
+      rowKey: 'zxnz_UUID'
+    };
+  },
   getInitialState: function getInitialState() {
     return {
       data: [],
       columns: [],
       checkeds: []
     };
+  },
+  componentDidMount: function componentDidMount() {
+    this.props.onComponentDidMount && this.props.onComponentDidMount(this);
   },
   __sortFunction: function __sortFunction(next, prev, key, _sort) {
     if (this.props.sortFunction) {
@@ -58,18 +73,57 @@ module.exports = React.createClass({
 
     this.forceUpdate();
   },
-  __onFilter: function __onFilter(filter) {
-    this.props.onFilterChange && this.props.onFilterChange(filter, this.state.data, this);
+  __onFilter: function __onFilter(filters) {
+    var _return = this.props.onFilterChange && this.props.onFilterChange(filters, this.state.data, this);
+
+    if (_return !== false) {
+      if (this.data && zn.isZNObject(this.data)) {
+        if (!this.data._argv.data) {
+          this.data._argv.data = {};
+        }
+
+        this.data._argv.data.filters = filters;
+        this.data.refresh();
+      }
+    }
+  },
+  __onTBodyEachRowData: function __onTBodyEachRowData(data, index, tbody) {
+    var _valueKey = this.props.valueKey || 'zxnz_UUID';
+
+    if (this.props.checkbox && this.props.value && _valueKey) {
+      var _value = data[_valueKey];
+
+      if (this.props.value.indexOf(_value) != -1) {
+        this.state.checkeds.push(_value);
+      }
+    }
   },
   __tbodyDataRender: function __tbodyDataRender(columns) {
-    return /*#__PURE__*/React.createElement(table.TBody, _extends({}, this.props.tbody, {
+    if (!this.state.data.length) {
+      return /*#__PURE__*/React.createElement(table.TBodyEmpty, _extends({
+        context: this.props.context
+      }, this.props.tbody, {
+        columns: columns,
+        data: this.state.data,
+        table: this
+      }));
+    }
+
+    return /*#__PURE__*/React.createElement(table.TBody, _extends({
+      rowKey: this.props.rowKey,
+      context: this.props.context,
+      eachRowData: this.__onTBodyEachRowData
+    }, this.props.tbody, {
       columns: columns,
       data: this.state.data,
       table: this
     }));
   },
   __tbodyLoadingRender: function __tbodyLoadingRender(columns) {
-    return /*#__PURE__*/React.createElement(table.TBody, _extends({}, this.props.tbody, {
+    return /*#__PURE__*/React.createElement(table.TBody, _extends({
+      rowKey: this.props.rowKey,
+      context: this.props.context
+    }, this.props.tbody, {
       columns: columns,
       loading: true,
       table: this
@@ -85,6 +139,10 @@ module.exports = React.createClass({
     var _return = this.props.onDataLoaded && this.props.onDataLoaded(data, this);
 
     if (_return !== false) {
+      if (zn.is(data, 'object') && data.result) {
+        data = data.result;
+      }
+
       this.setState({
         data: data
       });
@@ -94,12 +152,16 @@ module.exports = React.createClass({
     this.data = data;
     this.props.onDataCreated && this.props.onDataCreated(data, this, lifycycle);
   },
-  refresh: function refresh() {
+  refresh: function refresh(callback) {
+    this.setState({
+      checkeds: []
+    });
+
     if (this.data) {
-      this.state.checkeds = [];
       this.data.refresh();
     }
 
+    callback && callback();
     return this;
   },
   refreshHeaders: function refreshHeaders() {
@@ -125,6 +187,7 @@ module.exports = React.createClass({
       dataRender: function dataRender() {
         return _this2.__tbodyDataRender(columns);
       },
+      loadingEnabled: this.props.loadingEnabled || false,
       loadingRender: function loadingRender() {
         return _this2.__tbodyLoadingRender(columns);
       },
@@ -147,9 +210,11 @@ module.exports = React.createClass({
       className: this.props.caption.className,
       style: this.props.caption.style
     }, this.props.caption.render), !!this.props.colgroup && /*#__PURE__*/React.createElement(table.Colgroup, _extends({
+      context: this.props.context,
       keyMapping: this.props.keyMapping,
       columns: columns
     }, this.props.colgroup)), !!this.props.thead && /*#__PURE__*/React.createElement(table.THead, _extends({
+      context: this.props.context,
       onSort: this.__onSort,
       onColumnChange: this.__onTHeadColumnChange,
       columns: columns,
@@ -157,65 +222,124 @@ module.exports = React.createClass({
     }, this.props.thead, {
       table: this
     })), !!this.props.tfilter && /*#__PURE__*/React.createElement(table.TFilter, _extends({
+      context: this.props.context,
       onFilter: this.__onFilter,
       columns: columns
     }, this.props.tfilter, {
       table: this
     })), (this.props.tbody || this.props.data) && this.__renderTBody(columns), !!this.props.tfoot && /*#__PURE__*/React.createElement(table.TFoot, _extends({
+      context: this.props.context,
       columns: columns
     }, this.props.tfoot, {
       table: this
     })), this.props.childrenRender && this.props.childrenRender(columns, this), this.props.children);
   },
+  __rowHeadCheckboxChecked: function __rowHeadCheckboxChecked() {
+    var _checkeds = this.state.checkeds,
+        _valueKey = this.props.valueKey || 'zxnz_UUID';
+
+    if (!_checkeds.length) return false;
+
+    var _iterator = _createForOfIteratorHelper(this.state.data),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var item = _step.value;
+
+        if (_checkeds.indexOf(item[_valueKey]) == -1) {
+          return false;
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    return true;
+  },
+  __onRowHeadCheckboxChange: function __onRowHeadCheckboxChange(event) {
+    var _valueKey = this.props.valueKey || 'zxnz_UUID';
+
+    if (event.checked) {
+      var _iterator2 = _createForOfIteratorHelper(this.state.data),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var item = _step2.value;
+
+          if (this.state.checkeds.indexOf(item[_valueKey]) == -1) {
+            this.state.checkeds.push(item[_valueKey]);
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+    } else {
+      var _iterator3 = _createForOfIteratorHelper(this.state.data),
+          _step3;
+
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var item = _step3.value;
+
+          if (this.state.checkeds.indexOf(item[_valueKey]) != -1) {
+            this.state.checkeds.splice(this.state.checkeds.indexOf(item[_valueKey]), 1);
+          }
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+    }
+
+    this.forceUpdate();
+    this.props.onCheckboxChange && this.props.onCheckboxChange(this.state.checkeds, this);
+  },
   __initCheckbox: function __initCheckbox(columns) {
+    var _valueKey = this.props.valueKey || 'zxnz_UUID';
+
     var _checkbox = {
       width: 60,
       head: function (argv) {
-        var _this3 = this;
-
         var _table = argv.thead.props.table;
         if (!_table) return;
         return /*#__PURE__*/React.createElement(selector.Checkbox, {
           style: {
             justifyContent: 'center'
           },
-          key: this.state.checkeds.length,
+          key: zn.uuid(),
           text: '(' + _table.state.checkeds.length + ')',
-          checked: !!_table.state.data.length && _table.state.checkeds.length === _table.state.data.length,
-          onChange: function onChange(event) {
-            if (event.checked) {
-              _this3.state.checkeds = _this3.state.data.slice(0);
-            } else {
-              _this3.state.checkeds = [];
-            }
-
-            _this3.forceUpdate();
-
-            _this3.props.onCheckboxChange && _this3.props.onCheckboxChange(_this3.state.checkeds, _this3);
-          }
+          checked: this.__rowHeadCheckboxChecked(),
+          onChange: this.__onRowHeadCheckboxChange
         });
       }.bind(this),
       body: function (argv) {
-        var _this4 = this;
+        var _this3 = this;
 
         var _data = argv.data;
         return /*#__PURE__*/React.createElement(selector.UncontrolCheckbox, {
           style: {
             justifyContent: 'center'
           },
-          checked: this.state.checkeds.indexOf(_data) !== -1,
+          checked: this.state.checkeds.indexOf(_data[_valueKey]) !== -1,
           onClick: function onClick(event, checkbox) {
             event.stopPropagation();
 
             if (checkbox.props.checked) {
-              _this4.state.checkeds.splice(_this4.state.checkeds.indexOf(_data), 1);
+              _this3.state.checkeds.splice(_this3.state.checkeds.indexOf(_data[_valueKey]), 1);
             } else {
-              _this4.state.checkeds.push(_data);
+              _this3.state.checkeds.push(_data[_valueKey]);
             }
 
-            _this4.forceUpdate();
+            _this3.forceUpdate();
 
-            _this4.props.onCheckboxChange && _this4.props.onCheckboxChange(_this4.state.checkeds, _this4);
+            _this3.props.onCheckboxChange && _this3.props.onCheckboxChange(_this3.state.checkeds, _this3);
           }
         });
       }.bind(this)
@@ -260,6 +384,27 @@ module.exports = React.createClass({
   __onColumnDataCreated: function __onColumnDataCreated(data, lifecycle) {
     this.columns = data;
     this.props.onColumnsCreated && this.props.onColumnsCreated(data, this, lifecycle);
+  },
+  getData: function getData() {
+    return this.state.data;
+  },
+  removeRowData: function removeRowData(data) {
+    if (data) {
+      this.state.data.splice(this.state.data.indexOf(data), 1);
+      this.forceUpdate();
+    }
+
+    return this;
+  },
+  updateRowData: function updateRowData(data) {
+    if (data) {
+      var _index = this.state.data.indexOf(data);
+
+      this.state.data[_index] = data;
+      this.forceUpdate();
+    }
+
+    return this;
   },
   render: function render() {
     return /*#__PURE__*/React.createElement(znui.react.DataLifecycle, {

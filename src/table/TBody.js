@@ -4,19 +4,28 @@ var loader = require('znui-react-loader');
 
 module.exports = React.createClass({
 	displayName:'ZRTBody',
-	getInitialState:function(){
+	getInitialState: function(){
+		var _pageSize = this.props.pageSize || 50;
 		return {
 			active: null,
 			checkeds: [],
 			className: '',
+			pageIndex: this.props.pageIndex || 1,
+			pageSize: _pageSize,
+			pageCount: Math.ceil(this.props.data.length / _pageSize),
 			style: {},
 			loading: false
-		}
+		};
+	},
+	__getData: function (pageIndex, pageSize){
+		var _pageIndex = pageIndex || this.state.pageIndex;
+		var _pageSize = pageSize || this.state.pageSize;
+		return this.props.data.slice((_pageIndex-1) * _pageSize, Math.min(_pageIndex * _pageSize, this.props.data.length));
 	},
 	__renderLoading: function (){
 		var _element = znui.react.createReactElement(this.props.loadingRender, {
 			tbody: this
-		});
+		}, this.props.context);
 
 		if(!_element){
 		 	_element = <loader.DataLoader loader="wave" title={'Loading...'} />;
@@ -30,7 +39,7 @@ module.exports = React.createClass({
 	__renderEmpty: function (){
 		var _element = znui.react.createReactElement(this.props.emptyRender, {
 			tbody: this
-		});
+		}, this.props.context);
 
 		if(!_element){
 		 	_element = <div className="empty-content">
@@ -57,7 +66,7 @@ module.exports = React.createClass({
 	},
 	__renderRow: function (item, index){
 		if(!zn.is(item, 'object')) { return null;}
-		var _temp = this.props.eachRowData && this.props.eachRowData(item, index);
+		var _temp = this.props.eachRowData && this.props.eachRowData(item, index, this);
 		if(_temp && zn.is(_temp, 'object')){
 			item = _temp;
 		}
@@ -65,13 +74,14 @@ module.exports = React.createClass({
 			data: item,
 			rowIndex: index,
 			tbody: this
-		});
+		}, this.props.context);
 
 		if(_element){
 			return _element;
 		}
-
-		return <TRow key={index} {...this.props.row} 
+		var _rowKey = this.props.rowKey;
+		var _key = item[_rowKey] || index;
+		return <TRow key={_key} context={this.props.context} {...this.props.row} 
 					cell={this.props.cell}
 					cellRender={this.props.cellRender}
 					columns={this.props.columns} 
@@ -82,15 +92,55 @@ module.exports = React.createClass({
 					onRowClick={this.__onRowClick}
 					onCellClick={this.__onCellClick} />;
 	},
+	__pageChange: function (pageIndex){
+		this.setState({
+			pageIndex: pageIndex
+		});
+	},
+	__pagesRender: function (){
+		var _pageCount = this.state.pageCount, _pages = [];
+		if(_pageCount > 1) {
+			for(var i = 1; i < _pageCount + 1; i++) { _pages.push(i); }
+			return (
+				<tr className={znui.react.classname("tbody-pages", '')}>
+					<td colSpan={this.props.columns.length}>
+						<div className="data-page">
+							<div className="pages">
+								{
+									_pages.map((i, index)=>{
+										return <span key={index} className={'page ' + (this.state.pageIndex==i?'active':'')} onClick={()=>this.__pageChange(i)}>{i}</span>;
+									})
+								}
+							</div>
+							<span className="page-count">共 {this.props.data.length} 条</span>
+						</div>
+					</td>
+				</tr>
+			);
+		}
+	},
 	__renderData: function (){
 		if(this.props.data == null || (this.props.data && !this.props.data.length)){
 			return this.__renderEmpty();
 		}
-		return <>
-			{
-				this.props.data.map(this.__renderRow)
-			}
-		</>;
+		if(this.state.pageCount > 1){
+			return (
+				<>
+					{this.__pagesRender()}
+					{
+						this.__getData(this.state.pageIndex, this.state.pageSize).map(this.__renderRow)
+					}
+				</>
+			);
+		}
+
+		return (
+			<>
+				{
+					this.props.data.map(this.__renderRow)
+				}
+			</>
+		);
 	},
 	__render: function (){
 		if(this.props.loading || this.state.loading) {
