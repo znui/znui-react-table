@@ -116,8 +116,8 @@ module.exports = React.createClass({
 
     return /*#__PURE__*/React.createElement("th", {
       key: index,
-      className: znui.react.classname('thead-cell', _cell.className),
-      style: _cell.style
+      className: znui.react.classname('thead-cell', column.fixed ? 'fixed' : '', _cell.className),
+      style: znui.react.style(_cell.style, column.fixedStyles)
     }, _content, !!column.sort && /*#__PURE__*/React.createElement(THeadSort, {
       className: "cell-sort",
       onSort: function onSort(sort) {

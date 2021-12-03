@@ -46,6 +46,7 @@ module.exports = React.createClass({
     var _props = zn.extend({
       column: column,
       trow: this,
+      rowIndex: this.props.rowIndex,
       cellIndex: index,
       context: this.props.context,
       data: this.props.data,
@@ -61,9 +62,24 @@ module.exports = React.createClass({
     return /*#__PURE__*/React.createElement(TCell, _extends({
       key: index
     }, _props, {
+      fixedStyle: this.__fixedWidth(index),
       onCellClick: this.props.onCellClick,
       className: znui.react.classname('trow-cell', _props.className)
     }));
+  },
+  __fixedWidth: function __fixedWidth(index) {
+    var _columns = this.props.columns || [],
+        _width = 0;
+
+    for (var i = 0; i < index; i++) {
+      if (_columns[i].fixed) {
+        _width += _columns[i].width || 0;
+      }
+    }
+
+    return {
+      left: _width
+    };
   },
   render: function render() {
     var _className = this.props.className,

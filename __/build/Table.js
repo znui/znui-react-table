@@ -20,6 +20,8 @@ module.exports = React.createClass({
   displayName: 'ZRTable',
   getDefaultProps: function getDefaultProps() {
     return {
+      dataIndexEnabled: false,
+      fixedLayout: false,
       valueKey: 'zxnz_UUID',
       rowKey: 'zxnz_UUID'
     };
@@ -28,7 +30,7 @@ module.exports = React.createClass({
     return {
       data: [],
       columns: [],
-      checkeds: []
+      checkeds: this.props.checkeds || []
     };
   },
   componentDidMount: function componentDidMount() {
@@ -115,6 +117,7 @@ module.exports = React.createClass({
       eachRowData: this.__onTBodyEachRowData
     }, this.props.tbody, {
       columns: columns,
+      fixedColumns: this.props.fixedColumns,
       data: this.state.data,
       table: this
     }));
@@ -125,6 +128,7 @@ module.exports = React.createClass({
       context: this.props.context
     }, this.props.tbody, {
       columns: columns,
+      fixedColumns: this.props.fixedColumns,
       loading: true,
       table: this
     }));
@@ -171,6 +175,25 @@ module.exports = React.createClass({
 
     return this;
   },
+  setData: function setData(data) {
+    this.setState({
+      data: data
+    });
+  },
+  __fixedStyles: function __fixedStyles(index) {
+    var _columns = this.state.columns || [],
+        _width = 0;
+
+    for (var i = 0; i < index; i++) {
+      if (_columns[i].fixed) {
+        _width += (_columns[i].width || 0) - 1;
+      }
+    }
+
+    return {
+      left: _width - 1
+    };
+  },
   __renderTBody: function __renderTBody(columns) {
     var _this2 = this;
 
@@ -196,8 +219,86 @@ module.exports = React.createClass({
       onFinished: this.__tbodyDataLoaded
     });
   },
+  __onFixedLayoutBodyScroll: function __onFixedLayoutBodyScroll(e) {
+    this._layoutHeader.scrollLeft = e.target.scrollLeft;
+  },
   __render: function __render() {
+    var _this3 = this;
+
     var columns = this.state.columns;
+    columns = columns.map(function (item, index) {
+      if (item.fixed) {
+        item.fixedStyles = this.__fixedStyles(index);
+      }
+
+      return item;
+    }.bind(this));
+
+    if (this.props.fixedLayout) {
+      return /*#__PURE__*/React.createElement("div", {
+        className: "zr-table-fixed-layout"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "fixed-layout-header",
+        ref: function ref(_ref) {
+          return _this3._layoutHeader = _ref;
+        }
+      }, /*#__PURE__*/React.createElement("table", _extends({
+        className: znui.react.classname("zr-table", this.props.className),
+        style: znui.react.style(this.props.style, {
+          width: this.props.width
+        }),
+        "data-fixed": this.props.fixed,
+        cellPadding: this.props.cellPadding || 0,
+        cellSpacing: this.props.cellSpacing || 0
+      }, this.props.attrs), !!this.props.caption && /*#__PURE__*/React.createElement("caption", {
+        className: this.props.caption.className,
+        style: this.props.caption.style
+      }, this.props.caption.render), !!this.props.colgroup && /*#__PURE__*/React.createElement(table.Colgroup, _extends({
+        context: this.props.context,
+        keyMapping: this.props.keyMapping,
+        columns: columns
+      }, this.props.colgroup)), !!this.props.thead && /*#__PURE__*/React.createElement(table.THead, _extends({
+        context: this.props.context,
+        onSort: this.__onSort,
+        onColumnChange: this.__onTHeadColumnChange,
+        columns: columns,
+        keyMapping: this.props.keyMapping
+      }, this.props.thead, {
+        table: this
+      })), !!this.props.tfilter && /*#__PURE__*/React.createElement(table.TFilter, _extends({
+        context: this.props.context,
+        onFilter: this.__onFilter,
+        columns: columns
+      }, this.props.tfilter, {
+        table: this
+      })))), /*#__PURE__*/React.createElement("div", {
+        className: "fixed-layout-body",
+        onScroll: this.__onFixedLayoutBodyScroll
+      }, /*#__PURE__*/React.createElement("table", _extends({
+        className: znui.react.classname("zr-table", this.props.className),
+        style: znui.react.style(this.props.style, {
+          width: this.props.width
+        }),
+        "data-fixed": this.props.fixed,
+        cellPadding: this.props.cellPadding || 0,
+        cellSpacing: this.props.cellSpacing || 0
+      }, this.props.attrs), !!this.props.caption && /*#__PURE__*/React.createElement("caption", {
+        className: this.props.caption.className,
+        style: this.props.caption.style
+      }, this.props.caption.render), !!this.props.colgroup && /*#__PURE__*/React.createElement(table.Colgroup, _extends({
+        context: this.props.context,
+        keyMapping: this.props.keyMapping,
+        columns: columns
+      }, this.props.colgroup)), (this.props.tbody || this.props.data) && this.__renderTBody(columns))), /*#__PURE__*/React.createElement("div", {
+        className: "fixed-layout-footer"
+      }, !!this.props.tfoot && /*#__PURE__*/React.createElement(table.TFoot, _extends({
+        context: this.props.context,
+        columns: columns
+      }, this.props.tfoot, {
+        table: this
+      })), this.props.childrenRender && this.props.childrenRender(columns, this), this.props.children));
+    }
+
     return /*#__PURE__*/React.createElement("table", _extends({
       className: znui.react.classname("zr-table", this.props.className),
       style: znui.react.style(this.props.style, {
@@ -260,6 +361,8 @@ module.exports = React.createClass({
     return true;
   },
   __onRowHeadCheckboxChange: function __onRowHeadCheckboxChange(event) {
+    event.stopPropagation();
+
     var _valueKey = this.props.valueKey || 'zxnz_UUID';
 
     if (event.checked) {
@@ -305,7 +408,7 @@ module.exports = React.createClass({
     var _valueKey = this.props.valueKey || 'zxnz_UUID';
 
     var _checkbox = {
-      width: 60,
+      width: 80,
       head: function (argv) {
         var _table = argv.thead.props.table;
         if (!_table) return;
@@ -320,7 +423,7 @@ module.exports = React.createClass({
         });
       }.bind(this),
       body: function (argv) {
-        var _this3 = this;
+        var _this4 = this;
 
         var _data = argv.data;
         return /*#__PURE__*/React.createElement(selector.UncontrolCheckbox, {
@@ -332,14 +435,14 @@ module.exports = React.createClass({
             event.stopPropagation();
 
             if (checkbox.props.checked) {
-              _this3.state.checkeds.splice(_this3.state.checkeds.indexOf(_data[_valueKey]), 1);
+              _this4.state.checkeds.splice(_this4.state.checkeds.indexOf(_data[_valueKey]), 1);
             } else {
-              _this3.state.checkeds.push(_data[_valueKey]);
+              _this4.state.checkeds.push(_data[_valueKey]);
             }
 
-            _this3.forceUpdate();
+            _this4.forceUpdate();
 
-            _this3.props.onCheckboxChange && _this3.props.onCheckboxChange(_this3.state.checkeds, _this3);
+            _this4.props.onCheckboxChange && _this4.props.onCheckboxChange(_this4.state.checkeds, _this4);
           }
         });
       }.bind(this)
@@ -360,6 +463,23 @@ module.exports = React.createClass({
       columns = columns.unshift(_checkbox);
     }
   },
+  __initIndexColumn: function __initIndexColumn(columns) {
+    if (this.props.dataIndexEnabled) {
+      columns = columns.unshift({
+        width: 48,
+        label: '索引',
+        fixed: true,
+        name: '__index__',
+        body: function (argv) {
+          return /*#__PURE__*/React.createElement("div", {
+            style: {
+              textAlign: 'center'
+            }
+          }, +argv.rowIndex + 1);
+        }.bind(this)
+      });
+    }
+  },
   __columnsLoaded: function __columnsLoaded(columns) {
     if (columns && zn.is(columns, 'array')) {
       var _temp = null,
@@ -374,6 +494,8 @@ module.exports = React.createClass({
       }.bind(this));
 
       this.__initCheckbox(_columns);
+
+      this.__initIndexColumn(_columns);
 
       this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);
       this.setState({

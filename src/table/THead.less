@@ -9,6 +9,23 @@
             padding: 2px;
         }
     }
+    .thead-cell.fixed{
+        position: sticky !important;
+        background-color: #f3f7ff;
+        z-index: 2;
+        &::after{
+            position: absolute;
+            top: 0;
+            bottom: 0px;
+            /*left: -2px;*/
+            right: 0;
+            content: "";
+            pointer-events: none;
+            box-sizing: border-box;
+            /*border-left: 1px solid #f0f0f0;*/
+            border-right: 1px solid #f0f0f0;
+        }
+    }
     .thead-label{
         .thead-th{
             position: relative;

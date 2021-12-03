@@ -2,6 +2,8 @@
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 var React = znui.React || require('react');
 
 var Table = require('./Table');
@@ -16,18 +18,41 @@ module.exports = React.createClass({
       current: 1,
       data: [],
       total: 0,
-      pageIndex: this.props.pageIndex || 1
+      pageIndex: this.props.pageIndex || 1,
+      pageSize: this.props.pageSize || 10
     };
   },
   componentDidMount: function componentDidMount() {
     this.props.onComponentDidMount && this.props.onComponentDidMount(this);
   },
-  setPageIndex: function setPageIndex(pageIndex, callback) {
+  set: function set() {
+    this._table.data._argv.data.type = _type;
+
+    this._table.setPageIndex(1);
+  },
+  setPageIndex: function setPageIndex(pageIndex, argv, callback) {
     if (this.data) {
+      if (pageIndex == 1) {
+        this._table.setState({
+          checkeds: []
+        });
+      }
+
       this.state.pageIndex = pageIndex;
       this.state.current = pageIndex;
       this.forceUpdate();
       this.data._argv = this.__onDataInitial(this.props.data);
+
+      if (argv && _typeof(argv) == 'object') {
+        if (!this.data._argv.data) {
+          this.data._argv.data = {};
+        }
+
+        for (var key in argv) {
+          this.data._argv.data[key] = argv[key];
+        }
+      }
+
       this.data.refresh(callback);
     }
   },
@@ -43,6 +68,15 @@ module.exports = React.createClass({
       this.setPageIndex(newPage);
     }
   },
+  __handlePageSizeChange: function __handlePageSizeChange(event) {
+    var _this = this;
+
+    this.setState({
+      pageSize: event.target.value
+    }, function () {
+      return _this.setPageIndex(1);
+    });
+  },
   __renderPager: function __renderPager(columns, table) {
     var _columnSize = columns.length;
 
@@ -56,7 +90,9 @@ module.exports = React.createClass({
       total: _state.total,
       count: _state.count,
       current: _state.current,
-      onPageChanged: this.__handlePageChanged
+      pageSize: _state.pageSize,
+      onPageChanged: this.__handlePageChanged,
+      onPageSizeChange: this.__handlePageSizeChange
     },
         _Component = this.props.pager || pager.Pager;
 
@@ -93,7 +129,7 @@ module.exports = React.createClass({
     }, this.props.keyMaps);
 
     _params[_keyMaps.pageIndex] = this.state.pageIndex || 1;
-    _params[_keyMaps.pageSize] = this.props.pageSize || 10;
+    _params[_keyMaps.pageSize] = this.state.pageSize || 10;
 
     if (_method == 'get') {
       data = zn.deepAssign(data, {
@@ -135,7 +171,7 @@ module.exports = React.createClass({
           data: _data
         });
         this.setState({
-          total: Math.ceil(_pagerCount / this.props.pageSize),
+          total: Math.ceil(_pagerCount / this.state.pageSize),
           count: _pagerCount,
           current: this.state.current
         });
@@ -154,7 +190,7 @@ module.exports = React.createClass({
           data: _data[this.state.keyMaps.data]
         });
         this.setState({
-          total: Math.ceil(_data[this.state.keyMaps.total] / this.props.pageSize),
+          total: Math.ceil(_data[this.state.keyMaps.total] / this.state.pageSize),
           count: _data[this.state.keyMaps.total],
           current: _data[this.state.keyMaps.pageIndex]
         });
@@ -178,13 +214,13 @@ module.exports = React.createClass({
     return false;
   },
   render: function render() {
-    var _this = this;
+    var _this2 = this;
 
     return /*#__PURE__*/React.createElement(Table, _extends({}, this.props, {
       className: znui.react.classname('zr-table-pager', this.props.className),
       childrenRender: this.__renderPager,
       onComponentDidMount: function onComponentDidMount(table) {
-        _this._table = table;
+        _this2._table = table;
       },
       onFilterChange: this.__onFilterChange,
       onDataInitial: this.__onDataInitial,

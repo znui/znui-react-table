@@ -27,6 +27,7 @@ module.exports = React.createClass({
     }
 
     var _render = znui.react.createReactElement(this.props.render || this.props.body, {
+      rowIndex: this.props.rowIndex,
       cellIndex: this.props.cellIndex,
       column: this.props.column,
       data: this.props.data,
@@ -59,9 +60,11 @@ module.exports = React.createClass({
     this.props.onCellClick && this.props.onCellClick(event);
   },
   render: function render() {
+    var _column = this.props.column || {};
+
     return /*#__PURE__*/React.createElement("td", {
-      className: znui.react.classname("zr-table-tcell", this.props.className, this.state.className),
-      style: znui.react.style(this.props.style, this.state.style),
+      className: znui.react.classname("zr-table-tcell", _column.fixed ? 'fixed' : '', this.props.className, _column.bodyClassName, this.state.className),
+      style: znui.react.style(this.props.style, _column.bodyStyle, this.state.style, _column.fixedStyles),
       "data-disabled": this.state.disabled,
       "data-checked": this.state.checked,
       "data-active": this.state.active,

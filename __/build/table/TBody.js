@@ -131,9 +131,11 @@ module.exports = React.createClass({
       key: _key,
       context: this.props.context
     }, this.props.row, {
+      rowIndex: index,
       cell: this.props.cell,
       cellRender: this.props.cellRender,
       columns: this.props.columns,
+      fixedColumns: this.props.fixedColumns,
       tbody: this,
       data: item,
       active: this.state.active == item,

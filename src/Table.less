@@ -1,3 +1,30 @@
+.zr-table-fixed-layout{
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    .fixed-layout-header{
+        width: 100%;
+        z-index: 2;
+        overflow: hidden !important;
+    }
+    .fixed-layout-body{
+        width: 100%;
+        flex: 1;
+        overflow: auto !important;
+        background-color: #fff;
+        margin-top: -1px;
+    }
+    .fixed-layout-footer{
+        width: 100%;
+        line-height: 30px;
+        min-height: 30px;
+        overflow: hidden !important;
+        background-color: #fff;
+        border-top: 1px solid #e6e6e6;
+    }
+}
 .zr-table {
     border-collapse: collapse;
     border-spacing: 0;

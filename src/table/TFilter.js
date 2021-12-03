@@ -10,16 +10,19 @@ module.exports = React.createClass({
 			data: {}
 		}
 	},
-	__onFilterChange: function (event){
-		if(event.name) {
-			if(event.value) {
+	__onFilterChange: function (event, input, filterField){
+		if(event.name && event.opt) {
+			if(event.value === null || event.value === undefined) {
+				this.state.data[event.name] = null;
+				delete this.state.data[event.name];
+			}else if(!event.value && !filterField.props.emptyValueEnabled){
+				this.state.data[event.name] = null;
+				delete this.state.data[event.name];
+			}else{
 				this.state.data[event.name] = {
 					value: event.value,
 					opt: event.opt
 				};
-			}else if(event.value === null || event.value === undefined) {
-				this.state.data[event.name] = null;
-				delete this.state.data[event.name];
 			}
 		}
 		this.props.onFilter && this.props.onFilter(this.state.data);
@@ -61,12 +64,17 @@ module.exports = React.createClass({
 			}
 
 			if(zn.is(_filter, 'object')) {
-				_content = <filter.FilterField key={zn.uuid()} {..._filter} name={column.name} onFilterChange={this.__onFilterChange} onCancel={this.__onFilterCancel} />;
+				var _key = _filter.key || column.name;
+				if(zn.is(_key, 'function')) {
+					_key = _key.call(null, column, this);
+				}
+
+				_content = <filter.FilterField key={_key || zn.uuid()} {..._filter} name={column.name} onFilterChange={this.__onFilterChange} onCancel={this.__onFilterCancel} />;
 			}
 		}
 
 		var _cell = zn.extend({ style: {}, className: '' }, this.props.cell);
-		return <td key={index} className={znui.react.classname('tfilter-cell', _cell.className)} style={_cell.style}>
+		return <td key={index} className={znui.react.classname('tfilter-cell', (column.fixed?'fixed':''), _cell.className)} style={znui.react.style(_cell.style, column.fixedStyles)}>
 			{ _content }
 		</td>;
 	},

@@ -10,18 +10,36 @@ module.exports = React.createClass({
 			current: 1,
 			data: [],
 			total: 0,
-			pageIndex: this.props.pageIndex || 1
+			pageIndex: this.props.pageIndex || 1,
+			pageSize: this.props.pageSize || 10,
 		};
 	},
 	componentDidMount: function(){
 		this.props.onComponentDidMount && this.props.onComponentDidMount(this);
 	},
-	setPageIndex: function (pageIndex, callback){
+	set: function (){
+		this._table.data._argv.data.type = _type;
+			this._table.setPageIndex(1);
+	},
+	setPageIndex: function (pageIndex, argv, callback){
 		if(this.data){
+			if(pageIndex == 1){
+				this._table.setState({
+					checkeds: []
+				});
+			}
 			this.state.pageIndex = pageIndex;
 			this.state.current = pageIndex;
 			this.forceUpdate();
 			this.data._argv = this.__onDataInitial(this.props.data);
+			if(argv && typeof argv == 'object'){
+				if(!this.data._argv.data){
+					this.data._argv.data = {};
+				}
+				for(var key in argv){
+					this.data._argv.data[key] = argv[key];
+				}
+			}
 			this.data.refresh(callback);
 		}
 	},
@@ -36,6 +54,11 @@ module.exports = React.createClass({
 			this.setPageIndex(newPage);
 		}
 	},
+	__handlePageSizeChange: function (event){
+		this.setState({
+			pageSize: event.target.value
+		}, ()=>this.setPageIndex(1));
+	},
 	__renderPager: function (columns, table){
 		var _columnSize = columns.length;
 		if(!_columnSize){
@@ -47,7 +70,9 @@ module.exports = React.createClass({
 				total: _state.total,
 				count: _state.count,
 				current: _state.current,
-				onPageChanged: this.__handlePageChanged
+				pageSize: _state.pageSize,
+				onPageChanged: this.__handlePageChanged,
+				onPageSizeChange: this.__handlePageSizeChange
 			},
 			_Component = this.props.pager || pager.Pager;
 		if(zn.is(_Component, 'string')){
@@ -83,7 +108,7 @@ module.exports = React.createClass({
 			}, this.props.keyMaps);
 
 		_params[_keyMaps.pageIndex] = this.state.pageIndex || 1;
-		_params[_keyMaps.pageSize] = this.props.pageSize || 10;
+		_params[_keyMaps.pageSize] = this.state.pageSize || 10;
 		if(_method == 'get'){
 			data = zn.deepAssign(data, {
 				params: _params
@@ -119,7 +144,7 @@ module.exports = React.createClass({
 					data: _data
 				});
 				this.setState({
-					total: Math.ceil(_pagerCount/this.props.pageSize),
+					total: Math.ceil(_pagerCount/this.state.pageSize),
 					count: _pagerCount,
 					current: this.state.current,
 				});
@@ -135,9 +160,9 @@ module.exports = React.createClass({
 					data: _data[this.state.keyMaps.data]
 				});
 				this.setState({
-					total: Math.ceil(_data[this.state.keyMaps.total]/this.props.pageSize),
+					total: Math.ceil(_data[this.state.keyMaps.total]/this.state.pageSize),
 					count: _data[this.state.keyMaps.total],
-					current: _data[this.state.keyMaps.pageIndex],
+					current: _data[this.state.keyMaps.pageIndex]
 				});
 			}
 		}

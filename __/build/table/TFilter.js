@@ -15,16 +15,19 @@ module.exports = React.createClass({
       data: {}
     };
   },
-  __onFilterChange: function __onFilterChange(event) {
-    if (event.name) {
-      if (event.value) {
+  __onFilterChange: function __onFilterChange(event, input, filterField) {
+    if (event.name && event.opt) {
+      if (event.value === null || event.value === undefined) {
+        this.state.data[event.name] = null;
+        delete this.state.data[event.name];
+      } else if (!event.value && !filterField.props.emptyValueEnabled) {
+        this.state.data[event.name] = null;
+        delete this.state.data[event.name];
+      } else {
         this.state.data[event.name] = {
           value: event.value,
           opt: event.opt
         };
-      } else if (event.value === null || event.value === undefined) {
-        this.state.data[event.name] = null;
-        delete this.state.data[event.name];
       }
     }
 
@@ -72,8 +75,14 @@ module.exports = React.createClass({
       }
 
       if (zn.is(_filter, 'object')) {
+        var _key = _filter.key || column.name;
+
+        if (zn.is(_key, 'function')) {
+          _key = _key.call(null, column, this);
+        }
+
         _content = /*#__PURE__*/React.createElement(filter.FilterField, _extends({
-          key: zn.uuid()
+          key: _key || zn.uuid()
         }, _filter, {
           name: column.name,
           onFilterChange: this.__onFilterChange,
@@ -89,8 +98,8 @@ module.exports = React.createClass({
 
     return /*#__PURE__*/React.createElement("td", {
       key: index,
-      className: znui.react.classname('tfilter-cell', _cell.className),
-      style: _cell.style
+      className: znui.react.classname('tfilter-cell', column.fixed ? 'fixed' : '', _cell.className),
+      style: znui.react.style(_cell.style, column.fixedStyles)
     }, _content);
   },
   __renderRow: function __renderRow() {

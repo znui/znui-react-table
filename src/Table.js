@@ -6,6 +6,8 @@ module.exports = React.createClass({
 	displayName:'ZRTable',
 	getDefaultProps: function (){
 		return {
+			dataIndexEnabled: false,
+			fixedLayout: false,
 			valueKey: 'zxnz_UUID',
 			rowKey: 'zxnz_UUID'
 		};
@@ -14,7 +16,7 @@ module.exports = React.createClass({
 		return {
 			data: [], 
 			columns: [],
-			checkeds: []
+			checkeds: this.props.checkeds || []
 		};
 	},
 	componentDidMount: function(){
@@ -77,10 +79,10 @@ module.exports = React.createClass({
 		if(!this.state.data.length){
 			return <table.TBodyEmpty context={this.props.context} {...this.props.tbody} columns={columns} data={this.state.data} table={this} />;
 		}
-		return <table.TBody rowKey={this.props.rowKey} context={this.props.context} eachRowData={this.__onTBodyEachRowData} {...this.props.tbody} columns={columns} data={this.state.data} table={this} />;
+		return <table.TBody rowKey={this.props.rowKey} context={this.props.context} eachRowData={this.__onTBodyEachRowData} {...this.props.tbody} columns={columns} fixedColumns={this.props.fixedColumns} data={this.state.data} table={this} />;
 	},
 	__tbodyLoadingRender: function (columns){
-		return <table.TBody rowKey={this.props.rowKey} context={this.props.context} {...this.props.tbody} columns={columns} loading={true} table={this} />;
+		return <table.TBody rowKey={this.props.rowKey} context={this.props.context} {...this.props.tbody} columns={columns} fixedColumns={this.props.fixedColumns} loading={true} table={this} />;
 	},
 	__onTHeadColumnChange: function (data, index){
 		if(this.state.columns){
@@ -119,6 +121,21 @@ module.exports = React.createClass({
 
 		return this;
 	},
+	setData: function (data){
+		this.setState({ data: data });
+	},
+	__fixedStyles: function (index){
+		var _columns = this.state.columns||[], _width = 0;
+		for(var i = 0; i < index; i++){
+			if(_columns[i].fixed) {
+				_width += (_columns[i].width || 0) - 1;
+			}
+		}
+
+		return {
+			left: _width - 1
+		};
+	},
 	__renderTBody: function (columns){
 		var _data = this.props.data || this.props.tbody.data;
 		var _result = this.props.onDataInitial && this.props.onDataInitial(_data, this);
@@ -133,8 +150,52 @@ module.exports = React.createClass({
 					onDataCreated={this.__onDataCreated}
 					onFinished={this.__tbodyDataLoaded} />;
 	},
+	__onFixedLayoutBodyScroll: function (e){
+		this._layoutHeader.scrollLeft = e.target.scrollLeft;
+	},
 	__render: function (){
 		var columns = this.state.columns;
+		columns = columns.map(function (item, index){
+			if(item.fixed) {
+				item.fixedStyles = this.__fixedStyles(index);
+			}
+			return item;
+		}.bind(this));
+		if(this.props.fixedLayout) {
+			return (
+				<div className="zr-table-fixed-layout">
+					<div className="fixed-layout-header" ref={(ref)=>this._layoutHeader = ref}>
+						<table className={znui.react.classname("zr-table", this.props.className)} 
+							style={znui.react.style(this.props.style, { width: this.props.width })} 
+							data-fixed={this.props.fixed} 	
+							cellPadding={this.props.cellPadding || 0} 
+							cellSpacing={this.props.cellSpacing || 0} {...this.props.attrs}>
+							{ !!this.props.caption && <caption className={this.props.caption.className} style={this.props.caption.style}>{this.props.caption.render}</caption> }
+							{ !!this.props.colgroup && <table.Colgroup context={this.props.context} keyMapping={this.props.keyMapping} columns={columns} {...this.props.colgroup} /> }
+							{ !!this.props.thead && <table.THead context={this.props.context} onSort={this.__onSort} onColumnChange={this.__onTHeadColumnChange} columns={columns} keyMapping={this.props.keyMapping} {...this.props.thead} table={this} />}
+							{ !!this.props.tfilter && <table.TFilter context={this.props.context} onFilter={this.__onFilter} columns={columns} {...this.props.tfilter} table={this} />}
+						</table>
+					</div>
+					<div className="fixed-layout-body" onScroll={this.__onFixedLayoutBodyScroll}>
+						<table className={znui.react.classname("zr-table", this.props.className)} 
+							style={znui.react.style(this.props.style, { width: this.props.width })} 
+							data-fixed={this.props.fixed} 	
+							cellPadding={this.props.cellPadding || 0} 
+							cellSpacing={this.props.cellSpacing || 0} {...this.props.attrs}>
+							{ !!this.props.caption && <caption className={this.props.caption.className} style={this.props.caption.style}>{this.props.caption.render}</caption> }
+							{ !!this.props.colgroup && <table.Colgroup context={this.props.context} keyMapping={this.props.keyMapping} columns={columns} {...this.props.colgroup} /> }
+							{ (this.props.tbody || this.props.data) && this.__renderTBody(columns) }
+						</table>
+					</div>
+					<div className="fixed-layout-footer">
+						{ !!this.props.tfoot && <table.TFoot context={this.props.context} columns={columns} {...this.props.tfoot} table={this} />}
+						{ this.props.childrenRender && this.props.childrenRender(columns, this) }
+						{ this.props.children }
+					</div>
+				</div>
+			);
+		}
+
 		return (
 			<table className={znui.react.classname("zr-table", this.props.className)} 
 				style={znui.react.style(this.props.style, { width: this.props.width })} 
@@ -164,6 +225,7 @@ module.exports = React.createClass({
 		return true;
 	},
 	__onRowHeadCheckboxChange: function (event){
+		event.stopPropagation();
 		var _valueKey = this.props.valueKey || 'zxnz_UUID';
 		if(event.checked) {
 			for(var item of this.state.data) {
@@ -184,7 +246,7 @@ module.exports = React.createClass({
 	__initCheckbox: function (columns){
 		var _valueKey = this.props.valueKey || 'zxnz_UUID';
 		var _checkbox = {
-				width: 60,
+				width: 80,
 				head: function (argv){
 					var _table = argv.thead.props.table;
 					if(!_table) return;
@@ -225,6 +287,19 @@ module.exports = React.createClass({
 			columns = columns.unshift(_checkbox);
 		}
 	},
+	__initIndexColumn: function (columns){
+		if(this.props.dataIndexEnabled) {
+			columns = columns.unshift({
+				width: 48,
+				label: '索引', 
+				fixed: true,
+				name: '__index__',
+				body: function (argv){
+					return (<div style={{ textAlign: 'center' }}>{(+argv.rowIndex) + 1}</div>);
+				}.bind(this)
+			});
+		}
+	},
 	__columnsLoaded: function (columns){
 		if(columns && zn.is(columns, 'array')){
 			var _temp = null,
@@ -239,6 +314,7 @@ module.exports = React.createClass({
 					return _temp;
 				}.bind(this));
 			this.__initCheckbox(_columns);
+			this.__initIndexColumn(_columns);
 			this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);
 			this.setState({ columns: _columns });
 		}

@@ -73,10 +73,12 @@ module.exports = React.createClass({
 		}
 
 		var _cell = zn.extend({ style: {}, className: '' }, this.props.cell, column);
-		return <th key={index} className={znui.react.classname('thead-cell', _cell.className)} style={_cell.style}>
-			{ _content }
-			{ !!column.sort && <THeadSort className="cell-sort" onSort={(sort)=>this.__onColumnSort(sort, column)} />}
-		</th>;
+		return (
+			<th key={index} className={znui.react.classname('thead-cell', (column.fixed?'fixed':''), _cell.className)} style={znui.react.style(_cell.style, column.fixedStyles)}>
+				{ _content }
+				{ !!column.sort && <THeadSort className="cell-sort" onSort={(sort)=>this.__onColumnSort(sort, column)} />}
+			</th>
+		);
 	},
 	__renderRow: function (){
 		var _element = znui.react.createReactElement(this.props.rowRender, {
