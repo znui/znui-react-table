@@ -110,6 +110,10 @@ module.exports = React.createClass({
       _element = /*#__PURE__*/React.createElement(_Component, _pagerProps);
     }
 
+    if (this.props.fixedLayout) {
+      return /*#__PURE__*/React.createElement("div", null, _element);
+    }
+
     return /*#__PURE__*/React.createElement("tfoot", {
       className: "table-pager"
     }, /*#__PURE__*/React.createElement("tr", {

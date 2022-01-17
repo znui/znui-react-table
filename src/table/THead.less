@@ -8,11 +8,24 @@
             color: #ef0707;
             padding: 2px;
         }
+        &.sortable{
+            cursor: pointer;
+        }
+    }
+    .thead-cell{
+        .cell-sort{
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            margin: 8px 4px;
+            cursor: pointer;
+        }
     }
     .thead-cell.fixed{
         position: sticky !important;
         background-color: #f3f7ff;
         z-index: 2;
+        border-left: none !important;
         &::after{
             position: absolute;
             top: 0;

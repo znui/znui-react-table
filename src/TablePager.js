@@ -89,6 +89,10 @@ module.exports = React.createClass({
 		 	_element = <_Component {..._pagerProps} />;
 		}
 
+		if(this.props.fixedLayout) {
+			return (<div>{_element}</div>);
+		}
+
 		return (
 			<tfoot className="table-pager">
 				<tr className="pager-row">

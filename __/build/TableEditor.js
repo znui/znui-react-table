@@ -68,11 +68,13 @@ module.exports = React.createClass({
       return false;
     }
 
-    if (_typeof(_return) == 'object') {
+    if (zn.is(_return, 'array')) {
       data = _return;
+    } else if (zn.is(_return, 'object')) {
+      data = [data];
     }
 
-    this.state.table.state.data.push(zn.extend({}, data));
+    this.state.table.state.data = this.state.table.state.data.concat(data);
     this.state.table.forceUpdate();
     return this;
   },

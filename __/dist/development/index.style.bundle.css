@@ -13,6 +13,7 @@
   position: sticky !important;
   background-color: #f3f7ff;
   z-index: 2;
+  border-left: none !important;
 }
 .zr-table-tcell.fixed::after {
   position: absolute;
@@ -108,10 +109,21 @@
   color: #ef0707;
   padding: 2px;
 }
+.zr-table-thead .cell-label.sortable {
+  cursor: pointer;
+}
+.zr-table-thead .thead-cell .cell-sort {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin: 8px 4px;
+  cursor: pointer;
+}
 .zr-table-thead .thead-cell.fixed {
   position: sticky !important;
   background-color: #f3f7ff;
   z-index: 2;
+  border-left: none !important;
 }
 .zr-table-thead .thead-cell.fixed::after {
   position: absolute;
@@ -149,6 +161,9 @@
 .zr-table-thead .icon {
   width: 16px;
   height: 16px;
+}
+.zr-table-thead-sort {
+  display: inline-block;
 }
 .zr-table-tbody .tbody-empty .empty-content {
   font-size: 14px;
@@ -212,6 +227,7 @@
   position: sticky !important;
   background-color: #f3f7ff;
   z-index: 2;
+  border-left: none !important;
 }
 .zr-table-tfilter .tfilter-cell.fixed::after {
   position: absolute;
@@ -247,6 +263,9 @@
   overflow: auto;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1px solid #f0f0f0;
 }
 .zr-table-fixed-layout .fixed-layout-header {
   width: 100%;
@@ -307,6 +326,14 @@
   padding: 6px;
   border-left: 1px solid #e6e6e6;
   border-bottom: 1px solid #e6e6e6;
+  /*
+            .cell-sort{
+                position: absolute;
+                top: 0px;
+                right: 0px;
+                margin: 10px 5px;
+                cursor: pointer;
+            }*/
 }
 .zr-table-class-normal .zr-table-thead .thead-cell:first-child {
   border-left: none;
@@ -321,13 +348,6 @@
 .zr-table-class-normal .zr-table-thead .thead-cell .cell-label .required {
   color: #d95350;
 }
-.zr-table-class-normal .zr-table-thead .thead-cell .cell-sort {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  margin: 10px 5px;
-  cursor: pointer;
-}
 .zr-table-class-normal .zr-table-thead .thead-cell:last-child {
   border-right: none;
 }
@@ -338,7 +358,7 @@
   position: relative;
 }
 .zr-table-class-normal .zr-table-tfilter tr td {
-  border: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e6e6e6;
 }
 .zr-table-class-normal .zr-table-tbody > .zr-table-trow {
   font-size: 12px;

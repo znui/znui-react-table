@@ -6,16 +6,66 @@ module.exports = React.createClass({
 	displayName:'ZRTBody',
 	getInitialState: function(){
 		var _pageSize = this.props.pageSize || 50;
+		var _columnKeyMap = {}, _default = {};
+		for(var column of this.props.columns){
+			_columnKeyMap[column.name] = column;
+			if(column.value !== null && column.value !== undefined) {
+				_default[column.name] = column.value;
+			}
+		}
+
 		return {
 			active: null,
 			checkeds: [],
 			className: '',
+			columnKeyMap: _columnKeyMap,
+			default: _default,
 			pageIndex: this.props.pageIndex || 1,
 			pageSize: _pageSize,
 			pageCount: Math.ceil(this.props.data.length / _pageSize),
 			style: {},
 			loading: false
 		};
+	},
+	componentDidMount: function (){
+		for(var item of this.props.data){
+			this.__initialDataItem(item);
+		}
+	},
+	__initialDataItem: function (data){
+		var _default = this.state.default, _columnKeyMap = this.state.columnKeyMap, _value = null;
+		for(var key in _default){
+			_value = _default[key];
+			if(typeof _value == 'string' && _value.indexOf('{') != -1 && _value.indexOf('}') !=-1) {
+				_value = _value.format(data||{});
+				if(_columnKeyMap[key]) {
+					switch(_columnKeyMap[key].dataType) {
+						case 'Number':
+							if(_value.indexOf('{') == -1){
+								try {
+									_value = eval(_value);
+								} catch (err) {
+									_value = 0;
+									zn.error(err);
+								}
+							}
+							break;
+						case 'Price':
+							_value = znui.react.stringifyPrice(_value);
+							break;
+					}
+				}
+
+				data[key] = _value;
+			}
+
+
+			if(data[key] == null) {
+				data[key] = _value;
+			}
+		}
+
+		return data;
 	},
 	__getData: function (pageIndex, pageSize){
 		var _pageIndex = pageIndex || this.state.pageIndex;
@@ -32,9 +82,11 @@ module.exports = React.createClass({
 		}
 
 		var _loading = zn.extend({ className: '', style: {} }, this.props.loading);
-		return <tr className={znui.react.classname("tbody-loading", _loading.className)} style={_loading.style}>
-			<td colSpan={this.props.columns.length}>{_element}</td>
-		</tr>;
+		return (
+			<tr className={znui.react.classname("tbody-loading", _loading.className)} style={_loading.style}>
+				<td colSpan={this.props.columns.length}>{_element}</td>
+			</tr>
+		);
 	},
 	__renderEmpty: function (){
 		var _element = znui.react.createReactElement(this.props.emptyRender, {
@@ -42,15 +94,19 @@ module.exports = React.createClass({
 		}, this.props.context);
 
 		if(!_element){
-		 	_element = <div className="empty-content">
-				 <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="desktop" className="svg-inline--fa fa-desktop fa-w-18 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"></path></svg>
-				 <span>Empty</span>
-			 </div>;
+		 	_element = (
+				<div className="empty-content">
+					<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="desktop" className="svg-inline--fa fa-desktop fa-w-18 " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"></path></svg>
+					<span>Empty</span>
+				</div>
+			);
 		}
 		var _empty = zn.extend({ className: '', style: {} }, this.props.empty);
-		return <tr className={znui.react.classname("tbody-empty", _empty.className)} style={_empty.style}>
-			<td colSpan={this.props.columns.length}>{_element}</td>
-		</tr>;
+		return (
+			<tr className={znui.react.classname("tbody-empty", _empty.className)} style={_empty.style}>
+				<td colSpan={this.props.columns.length}>{_element}</td>
+			</tr>
+		);
 	},
 	__onRowClick: function (event) {
 		var _data = event.data;
@@ -81,15 +137,15 @@ module.exports = React.createClass({
 		}
 		var _rowKey = this.props.rowKey;
 		var _key = item[_rowKey] || index;
-		return <TRow key={_key} context={this.props.context} {...this.props.row} 
-					rowIndex={index}
+		return <TRow key={_key} rowIndex={index} {...this.props.row} 
+					context={this.props.context} 
 					cell={this.props.cell}
 					cellRender={this.props.cellRender}
 					columns={this.props.columns} 
 					fixedColumns={this.props.fixedColumns}
 					tbody={this}
-					data={item} 
 					active={this.state.active == item} 
+					data={item} 
 					checked={this.state.checkeds.indexOf(item) !== -1} 
 					onRowClick={this.__onRowClick}
 					onCellClick={this.__onCellClick} />;

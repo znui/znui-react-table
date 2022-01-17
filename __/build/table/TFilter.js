@@ -20,7 +20,7 @@ module.exports = React.createClass({
       if (event.value === null || event.value === undefined) {
         this.state.data[event.name] = null;
         delete this.state.data[event.name];
-      } else if (!event.value && !filterField.props.emptyValueEnabled) {
+      } else if (!event.value && !input.props.emptyValueEnabled) {
         this.state.data[event.name] = null;
         delete this.state.data[event.name];
       } else {

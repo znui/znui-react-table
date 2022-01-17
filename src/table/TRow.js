@@ -6,8 +6,8 @@ module.exports = React.createClass({
 	displayName:'ZRTRow',
 	getInitialState: function(){
 		return {
-			className: '',
-			style: {}
+			style: {},
+			className: ''
 		}
 	},
 	__getTargetTD: function (target) {
@@ -62,6 +62,8 @@ module.exports = React.createClass({
 		};
 	},
 	render:function(){
+		this.props.tbody.__initialDataItem(this.props.data);
+		this.props.onDataValidate && this.props.onDataValidate(this.props.data, this);
 		var _className = this.props.className, _style = this.props.style;
 		if(typeof _className == 'function'){
 			_className = _className(this.props.data, this);

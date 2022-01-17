@@ -45,14 +45,25 @@ module.exports = React.createClass({
 			}
 		}
 	},
-	__onSort: function (sort){
-		var _sort = null;
-		for(var key in sort){
-			_sort = sort[key]
-			this.state.data = this.state.data.sort((next, prev) => this.__sortFunction(next, prev, key, _sort));
-		}
+	__onSort: function (sorts){
+		var _return = this.props.onSortChange && this.props.onSortChange(sorts, this.state.data, this);
+		if(_return !== false){
+			if(this.data && zn.isZNObject(this.data)) {
+				if(!this.data._argv.data) {
+					this.data._argv.data = {};
+				}
+				this.data._argv.data.sorts = sorts;
+				this.data.refresh();
+			}else{
+				var _sort = null;
+				for(var key in sorts){
+					_sort = sorts[key]
+					this.state.data = this.state.data.sort((next, prev) => this.__sortFunction(next, prev, key, _sort));
+				}
 
-		this.forceUpdate();
+				this.forceUpdate();
+			}
+		}
 	},
 	__onFilter: function (filters){
 		var _return = this.props.onFilterChange && this.props.onFilterChange(filters, this.state.data, this);
@@ -79,10 +90,10 @@ module.exports = React.createClass({
 		if(!this.state.data.length){
 			return <table.TBodyEmpty context={this.props.context} {...this.props.tbody} columns={columns} data={this.state.data} table={this} />;
 		}
-		return <table.TBody rowKey={this.props.rowKey} context={this.props.context} eachRowData={this.__onTBodyEachRowData} {...this.props.tbody} columns={columns} fixedColumns={this.props.fixedColumns} data={this.state.data} table={this} />;
+		return <table.TBody rowKey={this.props.rowKey} row={this.props.row} context={this.props.context} eachRowData={this.__onTBodyEachRowData} {...this.props.tbody} columns={columns} fixedColumns={this.props.fixedColumns} data={this.state.data} table={this} />;
 	},
 	__tbodyLoadingRender: function (columns){
-		return <table.TBody rowKey={this.props.rowKey} context={this.props.context} {...this.props.tbody} columns={columns} fixedColumns={this.props.fixedColumns} loading={true} table={this} />;
+		return <table.TBody rowKey={this.props.rowKey} row={this.props.row} context={this.props.context} {...this.props.tbody} columns={columns} fixedColumns={this.props.fixedColumns} loading={true} table={this} />;
 	},
 	__onTHeadColumnChange: function (data, index){
 		if(this.state.columns){
@@ -188,7 +199,7 @@ module.exports = React.createClass({
 						</table>
 					</div>
 					<div className="fixed-layout-footer">
-						{ !!this.props.tfoot && <table.TFoot context={this.props.context} columns={columns} {...this.props.tfoot} table={this} />}
+						{ !!this.props.tfoot && <table><table.TFoot context={this.props.context} columns={columns} {...this.props.tfoot} table={this} /></table>}
 						{ this.props.childrenRender && this.props.childrenRender(columns, this) }
 						{ this.props.children }
 					</div>
@@ -247,6 +258,7 @@ module.exports = React.createClass({
 		var _valueKey = this.props.valueKey || 'zxnz_UUID';
 		var _checkbox = {
 				width: 80,
+				fixed: true,
 				head: function (argv){
 					var _table = argv.thead.props.table;
 					if(!_table) return;

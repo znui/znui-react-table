@@ -23,7 +23,7 @@ module.exports = React.createClass({
   },
   __onColumnSort: function __onColumnSort(sort, column) {
     if (column.name) {
-      this.state.sort[column.name] = sort == 'faSortAlphaDown' ? 'desc' : 'asc';
+      this.state.sort[column.name] = sort;
     }
 
     this.props.onSort && this.props.onSort(this.state.sort);
@@ -54,6 +54,7 @@ module.exports = React.createClass({
       }
     }));
   },
+  __sortRender: function __sortRender() {},
   __renderCell: function __renderCell(column, index) {
     var _this2 = this;
 
@@ -81,9 +82,13 @@ module.exports = React.createClass({
         _labelKey = _mapping['label'] || 'label',
         _label = column[_labelKey];
 
+    if (zn.is(_label, 'function')) {
+      _label = _label(column, this);
+    }
+
     if (!_content) {
       _content = /*#__PURE__*/React.createElement("div", {
-        className: "cell-label",
+        className: "cell-label " + (column.sort ? 'sortable' : ''),
         title: _label
       }, !!column.required && /*#__PURE__*/React.createElement("span", {
         "data-zr-popup-tooltip": "\u5FC5\u8981\u5B57\u6BB5",

@@ -61,19 +61,32 @@ module.exports = React.createClass({
       }
     }
   },
-  __onSort: function __onSort(sort) {
+  __onSort: function __onSort(sorts) {
     var _this = this;
 
-    var _sort = null;
+    var _return = this.props.onSortChange && this.props.onSortChange(sorts, this.state.data, this);
 
-    for (var key in sort) {
-      _sort = sort[key];
-      this.state.data = this.state.data.sort(function (next, prev) {
-        return _this.__sortFunction(next, prev, key, _sort);
-      });
+    if (_return !== false) {
+      if (this.data && zn.isZNObject(this.data)) {
+        if (!this.data._argv.data) {
+          this.data._argv.data = {};
+        }
+
+        this.data._argv.data.sorts = sorts;
+        this.data.refresh();
+      } else {
+        var _sort = null;
+
+        for (var key in sorts) {
+          _sort = sorts[key];
+          this.state.data = this.state.data.sort(function (next, prev) {
+            return _this.__sortFunction(next, prev, key, _sort);
+          });
+        }
+
+        this.forceUpdate();
+      }
     }
-
-    this.forceUpdate();
   },
   __onFilter: function __onFilter(filters) {
     var _return = this.props.onFilterChange && this.props.onFilterChange(filters, this.state.data, this);
@@ -113,6 +126,7 @@ module.exports = React.createClass({
 
     return /*#__PURE__*/React.createElement(table.TBody, _extends({
       rowKey: this.props.rowKey,
+      row: this.props.row,
       context: this.props.context,
       eachRowData: this.__onTBodyEachRowData
     }, this.props.tbody, {
@@ -125,6 +139,7 @@ module.exports = React.createClass({
   __tbodyLoadingRender: function __tbodyLoadingRender(columns) {
     return /*#__PURE__*/React.createElement(table.TBody, _extends({
       rowKey: this.props.rowKey,
+      row: this.props.row,
       context: this.props.context
     }, this.props.tbody, {
       columns: columns,
@@ -291,12 +306,12 @@ module.exports = React.createClass({
         columns: columns
       }, this.props.colgroup)), (this.props.tbody || this.props.data) && this.__renderTBody(columns))), /*#__PURE__*/React.createElement("div", {
         className: "fixed-layout-footer"
-      }, !!this.props.tfoot && /*#__PURE__*/React.createElement(table.TFoot, _extends({
+      }, !!this.props.tfoot && /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement(table.TFoot, _extends({
         context: this.props.context,
         columns: columns
       }, this.props.tfoot, {
         table: this
-      })), this.props.childrenRender && this.props.childrenRender(columns, this), this.props.children));
+      }))), this.props.childrenRender && this.props.childrenRender(columns, this), this.props.children));
     }
 
     return /*#__PURE__*/React.createElement("table", _extends({
@@ -409,6 +424,7 @@ module.exports = React.createClass({
 
     var _checkbox = {
       width: 80,
+      fixed: true,
       head: function (argv) {
         var _table = argv.thead.props.table;
         if (!_table) return;

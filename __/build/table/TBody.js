@@ -2,6 +2,12 @@
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 var React = znui.React || require('react');
 
 var TRow = require('./TRow');
@@ -13,16 +19,96 @@ module.exports = React.createClass({
   getInitialState: function getInitialState() {
     var _pageSize = this.props.pageSize || 50;
 
+    var _columnKeyMap = {},
+        _default = {};
+
+    var _iterator = _createForOfIteratorHelper(this.props.columns),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var column = _step.value;
+        _columnKeyMap[column.name] = column;
+
+        if (column.value !== null && column.value !== undefined) {
+          _default[column.name] = column.value;
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
     return {
       active: null,
       checkeds: [],
       className: '',
+      columnKeyMap: _columnKeyMap,
+      "default": _default,
       pageIndex: this.props.pageIndex || 1,
       pageSize: _pageSize,
       pageCount: Math.ceil(this.props.data.length / _pageSize),
       style: {},
       loading: false
     };
+  },
+  componentDidMount: function componentDidMount() {
+    var _iterator2 = _createForOfIteratorHelper(this.props.data),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var item = _step2.value;
+
+        this.__initialDataItem(item);
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
+  },
+  __initialDataItem: function __initialDataItem(data) {
+    var _default = this.state["default"],
+        _columnKeyMap = this.state.columnKeyMap,
+        _value = null;
+
+    for (var key in _default) {
+      _value = _default[key];
+
+      if (typeof _value == 'string' && _value.indexOf('{') != -1 && _value.indexOf('}') != -1) {
+        _value = _value.format(data || {});
+
+        if (_columnKeyMap[key]) {
+          switch (_columnKeyMap[key].dataType) {
+            case 'Number':
+              if (_value.indexOf('{') == -1) {
+                try {
+                  _value = eval(_value);
+                } catch (err) {
+                  _value = 0;
+                  zn.error(err);
+                }
+              }
+
+              break;
+
+            case 'Price':
+              _value = znui.react.stringifyPrice(_value);
+              break;
+          }
+        }
+
+        data[key] = _value;
+      }
+
+      if (data[key] == null) {
+        data[key] = _value;
+      }
+    }
+
+    return data;
   },
   __getData: function __getData(pageIndex, pageSize) {
     var _pageIndex = pageIndex || this.state.pageIndex;
@@ -129,16 +215,16 @@ module.exports = React.createClass({
 
     return /*#__PURE__*/React.createElement(TRow, _extends({
       key: _key,
-      context: this.props.context
+      rowIndex: index
     }, this.props.row, {
-      rowIndex: index,
+      context: this.props.context,
       cell: this.props.cell,
       cellRender: this.props.cellRender,
       columns: this.props.columns,
       fixedColumns: this.props.fixedColumns,
       tbody: this,
-      data: item,
       active: this.state.active == item,
+      data: item,
       checked: this.state.checkeds.indexOf(item) !== -1,
       onRowClick: this.__onRowClick,
       onCellClick: this.__onCellClick
