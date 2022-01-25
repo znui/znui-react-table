@@ -85,6 +85,7 @@ module.exports = React.createClass({
 				this.state.checkeds.push(_value);
 			}
 		}
+		this.props.onEachRowData && this.props.onEachRowData(data, index, tbody, this);
 	},
 	__tbodyDataRender: function (columns){
 		if(!this.state.data.length){
@@ -228,7 +229,7 @@ module.exports = React.createClass({
 		var _checkeds = this.state.checkeds, _valueKey = this.props.valueKey || 'zxnz_UUID';
 		if(!_checkeds.length) return false;
 		for(var item of this.state.data) {
-			if(_checkeds.indexOf(item[_valueKey]) == -1){
+			if(!item.__checkedDisabled__ && _checkeds.indexOf(item[_valueKey]) == -1){
 				return false;
 			}
 		}
@@ -240,13 +241,13 @@ module.exports = React.createClass({
 		var _valueKey = this.props.valueKey || 'zxnz_UUID';
 		if(event.checked) {
 			for(var item of this.state.data) {
-				if(this.state.checkeds.indexOf(item[_valueKey]) == -1){
+				if(!item.__checkedDisabled__ && this.state.checkeds.indexOf(item[_valueKey]) == -1){
 					this.state.checkeds.push(item[_valueKey]);
 				}
 			}
 		}else{
 			for(var item of this.state.data) {
-				if(this.state.checkeds.indexOf(item[_valueKey]) != -1){
+				if(!item.__checkedDisabled__ && this.state.checkeds.indexOf(item[_valueKey]) != -1){
 					this.state.checkeds.splice(this.state.checkeds.indexOf(item[_valueKey]), 1);
 				}
 			}
@@ -273,6 +274,7 @@ module.exports = React.createClass({
 					var _data = argv.data;
 					return <selector.UncontrolCheckbox 
 								style={{ justifyContent: 'center' }}
+								disabled={_data.__checkedDisabled__}
 								checked={this.state.checkeds.indexOf(_data[_valueKey]) !== -1}
 								onClick={(event, checkbox)=>{
 									event.stopPropagation();

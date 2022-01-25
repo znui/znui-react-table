@@ -112,6 +112,8 @@ module.exports = React.createClass({
         this.state.checkeds.push(_value);
       }
     }
+
+    this.props.onEachRowData && this.props.onEachRowData(data, index, tbody, this);
   },
   __tbodyDataRender: function __tbodyDataRender(columns) {
     if (!this.state.data.length) {
@@ -363,7 +365,7 @@ module.exports = React.createClass({
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var item = _step.value;
 
-        if (_checkeds.indexOf(item[_valueKey]) == -1) {
+        if (!item.__checkedDisabled__ && _checkeds.indexOf(item[_valueKey]) == -1) {
           return false;
         }
       }
@@ -388,7 +390,7 @@ module.exports = React.createClass({
         for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
           var item = _step2.value;
 
-          if (this.state.checkeds.indexOf(item[_valueKey]) == -1) {
+          if (!item.__checkedDisabled__ && this.state.checkeds.indexOf(item[_valueKey]) == -1) {
             this.state.checkeds.push(item[_valueKey]);
           }
         }
@@ -405,7 +407,7 @@ module.exports = React.createClass({
         for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
           var item = _step3.value;
 
-          if (this.state.checkeds.indexOf(item[_valueKey]) != -1) {
+          if (!item.__checkedDisabled__ && this.state.checkeds.indexOf(item[_valueKey]) != -1) {
             this.state.checkeds.splice(this.state.checkeds.indexOf(item[_valueKey]), 1);
           }
         }
@@ -446,6 +448,7 @@ module.exports = React.createClass({
           style: {
             justifyContent: 'center'
           },
+          disabled: _data.__checkedDisabled__,
           checked: this.state.checkeds.indexOf(_data[_valueKey]) !== -1,
           onClick: function onClick(event, checkbox) {
             event.stopPropagation();
