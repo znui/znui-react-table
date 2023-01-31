@@ -19,7 +19,7 @@ module.exports = React.createClass({
 	},
 	set: function (){
 		this._table.data._argv.data.type = _type;
-			this._table.setPageIndex(1);
+		this._table.setPageIndex(1);
 	},
 	setPageIndex: function (pageIndex, argv, callback){
 		if(this.data){

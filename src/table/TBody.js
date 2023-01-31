@@ -137,7 +137,7 @@ module.exports = React.createClass({
 		}
 		var _rowKey = this.props.rowKey;
 		var _key = item[_rowKey] || index;
-		return <TRow key={_key} rowIndex={index} {...this.props.row} 
+		return <TRow key={_key + '-' + index} rowIndex={index} {...this.props.row} 
 					context={this.props.context} 
 					cell={this.props.cell}
 					cellRender={this.props.cellRender}

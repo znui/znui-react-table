@@ -1,13 +1,15 @@
 var React = znui.React || require('react');
 var table = require('./table/index');
 var selector = require('znui-react-selector');
+var Loading = require('./Loading');
 
 module.exports = React.createClass({
 	displayName:'ZRTable',
 	getDefaultProps: function (){
 		return {
-			dataIndexEnabled: false,
 			fixedLayout: false,
+			loadingEnabled: true,
+			dataIndexEnabled: false,
 			valueKey: 'zxnz_UUID',
 			rowKey: 'zxnz_UUID'
 		};
@@ -94,6 +96,12 @@ module.exports = React.createClass({
 		return <table.TBody rowKey={this.props.rowKey} row={this.props.row} context={this.props.context} eachRowData={this.__onTBodyEachRowData} {...this.props.tbody} columns={columns} fixedColumns={this.props.fixedColumns} data={this.state.data} table={this} />;
 	},
 	__tbodyLoadingRender: function (columns){
+		return (
+			<div className='data-loading'>
+				<span>加载中</span>
+				<Loading />
+			</div>
+		);
 		return <table.TBody rowKey={this.props.rowKey} row={this.props.row} context={this.props.context} {...this.props.tbody} columns={columns} fixedColumns={this.props.fixedColumns} loading={true} table={this} />;
 	},
 	__onTHeadColumnChange: function (data, index){
@@ -156,7 +164,7 @@ module.exports = React.createClass({
 		}
 		return <znui.react.DataLifecycle data={_data} 
 					dataRender={()=>this.__tbodyDataRender(columns)} 
-					loadingEnabled={this.props.loadingEnabled||false}
+					loadingEnabled={this.props.loadingEnabled}
 					loadingRender={()=>this.__tbodyLoadingRender(columns)}
 					responseHandler={this.props.responseHandler}
 					onDataCreated={this.__onDataCreated}
@@ -167,12 +175,12 @@ module.exports = React.createClass({
 	},
 	__render: function (){
 		var columns = this.state.columns;
-		columns = columns.map(function (item, index){
+		columns = columns.map((item, index)=>{
 			if(item.fixed) {
 				item.fixedStyles = this.__fixedStyles(index);
 			}
 			return item;
-		}.bind(this));
+		});
 		if(this.props.fixedLayout) {
 			return (
 				<div className="zr-table-fixed-layout">
@@ -199,11 +207,13 @@ module.exports = React.createClass({
 							{ (this.props.tbody || this.props.data) && this.__renderTBody(columns) }
 						</table>
 					</div>
-					<div className="fixed-layout-footer">
-						{ !!this.props.tfoot && <table><table.TFoot context={this.props.context} columns={columns} {...this.props.tfoot} table={this} /></table>}
-						{ this.props.childrenRender && this.props.childrenRender(columns, this) }
-						{ this.props.children }
-					</div>
+					{
+						this.props.showFoot !== false && <div className="fixed-layout-footer">
+							{ !!this.props.tfoot && <table><table.TFoot context={this.props.context} columns={columns} {...this.props.tfoot} table={this} /></table>}
+							{ this.props.childrenRender && this.props.childrenRender(columns, this) }
+							{ this.props.children }
+						</div>
+					}
 				</div>
 			);
 		}
@@ -256,39 +266,50 @@ module.exports = React.createClass({
 		this.props.onCheckboxChange && this.props.onCheckboxChange(this.state.checkeds, this);
 	},
 	__initCheckbox: function (columns){
-		var _valueKey = this.props.valueKey || 'zxnz_UUID';
+		if(!this.props.checkbox) return;
+		var _valueKey = this.props.valueKey || 'zxnz_UUID', _value = this.props.checkbox;
 		var _checkbox = {
-				width: 80,
-				fixed: true,
-				head: function (argv){
-					var _table = argv.thead.props.table;
-					if(!_table) return;
-					return <selector.Checkbox
-								style={{ justifyContent: 'center' }}
-								key={zn.uuid()}
-								text={'(' + _table.state.checkeds.length +')'}
-								checked={this.__rowHeadCheckboxChecked()}
-								onChange={this.__onRowHeadCheckboxChange} />;
-				}.bind(this),
-				body: function (argv){
-					var _data = argv.data;
-					return <selector.UncontrolCheckbox 
-								style={{ justifyContent: 'center' }}
-								disabled={_data.__checkedDisabled__}
-								checked={this.state.checkeds.indexOf(_data[_valueKey]) !== -1}
-								onClick={(event, checkbox)=>{
-									event.stopPropagation();
-									if(checkbox.props.checked) {
-										this.state.checkeds.splice(this.state.checkeds.indexOf(_data[_valueKey]), 1); 
-									}else{
-										this.state.checkeds.push(_data[_valueKey]);
-									}
-									this.forceUpdate();
-									this.props.onCheckboxChange && this.props.onCheckboxChange(this.state.checkeds, this);
-								}} />;
-				}.bind(this)
+			width: 60,
+			fixed: true,
+			head: (argv)=>{
+				var _table = argv.thead.props.table;
+				if(!_table) return;
+				return (
+					<selector.Checkbox
+						style={{ justifyContent: 'center' }}
+						key={zn.uuid()}
+						text={' ' + _table.state.checkeds.length}
+						checked={this.__rowHeadCheckboxChecked()}
+						onChange={this.__onRowHeadCheckboxChange} />
+				);
 			},
-			_value = this.props.checkbox;
+			body: (argv)=>{
+				var _data = argv.data;
+				var _return = this.props.onBodyColumnCheckboxRender && this.props.onBodyColumnCheckboxRender(argv, this);
+				if(_return) {
+					return _return;
+				}
+				if(_return === false){
+					return null;
+				}
+				return (
+					<selector.UncontrolCheckbox 
+						style={{ justifyContent: 'center' }}
+						disabled={_data.__checkedDisabled__}
+						checked={this.state.checkeds.indexOf(_data[_valueKey]) !== -1}
+						onClick={(event, checkbox)=>{
+							event.stopPropagation();
+							if(checkbox.props.checked) {
+								this.state.checkeds.splice(this.state.checkeds.indexOf(_data[_valueKey]), 1); 
+							}else{
+								this.state.checkeds.push(_data[_valueKey]);
+							}
+							this.forceUpdate();
+							this.props.onCheckboxChange && this.props.onCheckboxChange(this.state.checkeds, this);
+						}} />
+				);
+			}
+		};
 		switch(zn.type(_value)) {
 			case 'object':
 				_checkbox = zn.extend({}, _value);
@@ -297,9 +318,8 @@ module.exports = React.createClass({
 				_checkbox.width = _value;
 				break;
 		}
-		if(_value) {
-			columns = columns.unshift(_checkbox);
-		}
+
+		columns = columns.unshift(_checkbox);
 	},
 	__initIndexColumn: function (columns){
 		if(this.props.dataIndexEnabled) {
@@ -319,14 +339,14 @@ module.exports = React.createClass({
 			var _temp = null,
 				_result = null,
 				_columnIterator = this.props.columnIterator,
-				_columns = columns.map(function (column){
+				_columns = columns.map((column)=>{
 					_temp = zn.deepAssign({}, column);
 					_result = _columnIterator && _columnIterator(_temp, this);
 					if(_result === false) return null;
 					if(typeof _result == 'object') return _result;
 
 					return _temp;
-				}.bind(this));
+				});
 			this.__initCheckbox(_columns);
 			this.__initIndexColumn(_columns);
 			this.props.onColumnsLoaded && this.props.onColumnsLoaded(columns);

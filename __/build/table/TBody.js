@@ -214,7 +214,7 @@ module.exports = React.createClass({
     var _key = item[_rowKey] || index;
 
     return /*#__PURE__*/React.createElement(TRow, _extends({
-      key: _key,
+      key: _key + '-' + index,
       rowIndex: index
     }, this.props.row, {
       context: this.props.context,

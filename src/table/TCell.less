@@ -1,11 +1,13 @@
 .zr-table-tcell{
+    /*
     white-space: nowrap;
+    word-break: keep-all;
+    */
     overflow: hidden;
     text-overflow: ellipsis;
-    word-break: keep-all;
     &.fixed{
         position: sticky !important;
-        background-color: #f3f7ff;
+        background-color: rgba(254, 254, 254, 0.95);
         z-index: 2;
         border-left: none !important;
         &::after{
@@ -22,9 +24,12 @@
         }
     }
     .cell-label, *{
+        /*
         white-space: nowrap;
+        word-break: keep-all;
+        */
         overflow: hidden;
         text-overflow: ellipsis;
-        word-break: keep-all;
+        word-break: break-all;
     }
 }

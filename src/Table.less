@@ -1,13 +1,25 @@
 .zr-table-fixed-layout{
     height: 100%;
     width: 100%;
-    min-width: 480px;
+    min-width: 340px;
     overflow: auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     box-sizing: border-box;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    .data-loading{
+        position: absolute;
+        text-align: center;
+        width: 96%;
+        padding: 20px 0px;
+        font-size: 14px;
+        color: #666666;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
     .fixed-layout-header{
         width: 100%;
         z-index: 2;

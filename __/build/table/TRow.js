@@ -85,6 +85,7 @@ module.exports = React.createClass({
     this.props.tbody.__initialDataItem(this.props.data);
 
     this.props.onDataValidate && this.props.onDataValidate(this.props.data, this);
+    var _columnLength = (this.props.columns || []).length;
     var _className = this.props.className,
         _style = this.props.style;
 
@@ -96,12 +97,16 @@ module.exports = React.createClass({
       _style = _style(this.props.data, this);
     }
 
-    return /*#__PURE__*/React.createElement("tr", {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("tr", {
       className: znui.react.classname('zr-table-trow', _className, this.state.className),
       style: znui.react.style(_style, this.state.style),
       "data-active": this.props.active,
       "data-checked": this.props.checked,
       onClick: this.__onRowClick
-    }, (this.props.columns || []).map(this.__cellRender));
+    }, (this.props.columns || []).map(this.__cellRender)), this.state.child && /*#__PURE__*/React.createElement("tr", {
+      className: znui.react.classname('zr-table-trow-child')
+    }, /*#__PURE__*/React.createElement("td", {
+      colSpan: _columnLength
+    }, this.state.child)));
   }
 });

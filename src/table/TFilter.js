@@ -74,9 +74,11 @@ module.exports = React.createClass({
 		}
 
 		var _cell = zn.extend({ style: {}, className: '' }, this.props.cell);
-		return <td key={index} className={znui.react.classname('tfilter-cell', (column.fixed?'fixed':''), _cell.className)} style={znui.react.style(_cell.style, column.fixedStyles)}>
-			{ _content }
-		</td>;
+		return (
+			<td key={index} className={znui.react.classname('tfilter-cell', (column.fixed?'fixed':''), _cell.className)} style={znui.react.style(_cell.style, column.fixedStyles)}>
+				{ _content }
+			</td>
+		);
 	},
 	__renderRow: function (){
 		var _element = znui.react.createReactElement(this.props.rowRender, {
