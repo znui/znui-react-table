@@ -55,8 +55,25 @@ module.exports = React.createClass({
     }));
   },
   __sortRender: function __sortRender() {},
+  __validateColumn: function __validateColumn(column, index) {
+    if (column.validate === false) {
+      return false;
+    }
+
+    if (zn.is(column.validate, 'function')) {
+      var _return = column.validate.apply(null, [column, index]);
+
+      if (_return === false) {
+        return false;
+      }
+    }
+  },
   __renderCell: function __renderCell(column, index) {
     var _this2 = this;
+
+    if (this.__validateColumn(column, index) === false) {
+      return null;
+    }
 
     if (!zn.is(column, 'object')) {
       return null;

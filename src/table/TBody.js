@@ -22,7 +22,6 @@ module.exports = React.createClass({
 			default: _default,
 			pageIndex: this.props.pageIndex || 1,
 			pageSize: _pageSize,
-			pageCount: Math.ceil(this.props.data.length / _pageSize),
 			style: {},
 			loading: false
 		};
@@ -156,7 +155,7 @@ module.exports = React.createClass({
 		});
 	},
 	__pagesRender: function (){
-		var _pageCount = this.state.pageCount, _pages = [];
+		var _pageCount = Math.ceil(this.props.data.length / this.state.pageSize), _pages = [];
 		if(_pageCount > 1) {
 			for(var i = 1; i < _pageCount + 1; i++) { _pages.push(i); }
 			return (
@@ -181,7 +180,8 @@ module.exports = React.createClass({
 		if(this.props.data == null || (this.props.data && !this.props.data.length)){
 			return this.__renderEmpty();
 		}
-		if(this.state.pageCount > 1){
+		var _pageCount = Math.ceil(this.props.data.length / this.state.pageSize);
+		if(_pageCount > 1){
 			return (
 				<>
 					{this.__pagesRender()}

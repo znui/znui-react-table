@@ -25,17 +25,22 @@ module.exports = React.createClass({
   componentDidMount: function componentDidMount() {
     this.props.onComponentDidMount && this.props.onComponentDidMount(this);
   },
-  set: function set() {
-    this._table.data._argv.data.type = _type;
-
-    this._table.setPageIndex(1);
+  resetCheckeds: function resetCheckeds() {
+    return this._table.setState({
+      checkeds: []
+    }), this;
   },
   setPageIndex: function setPageIndex(pageIndex, argv, callback) {
     if (this.data) {
-      if (pageIndex == 1) {
-        this._table.setState({
-          checkeds: []
-        });
+      if (argv && argv.__reset__) {
+        argv.__reset__ = null;
+        delete argv.__reset__;
+
+        if (pageIndex == 1) {
+          this._table.setState({
+            checkeds: []
+          });
+        }
       }
 
       this.state.pageIndex = pageIndex;
@@ -55,10 +60,12 @@ module.exports = React.createClass({
 
       this.data.refresh(callback);
     }
+
+    return this;
   },
-  refresh: function refresh(callback) {
+  refresh: function refresh(callback, reset) {
     if (this._table) {
-      this._table.refresh(callback);
+      this._table.refresh(callback, reset);
     }
   },
   __handlePageChanged: function __handlePageChanged(newPage) {
@@ -207,12 +214,9 @@ module.exports = React.createClass({
     var _return = this.props.onFilterChange && this.props.onFilterChange(filters, data, table);
 
     if (_return !== false) {
-      if (!this.data._argv.data) {
-        this.data._argv.data = {};
-      }
-
-      this.data._argv.data.filters = filters;
-      this.setPageIndex(1);
+      this.setPageIndex(1, {
+        filters: filters
+      });
     }
 
     return false;

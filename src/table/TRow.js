@@ -30,7 +30,21 @@ module.exports = React.createClass({
 		this.props.onClick && this.props.onClick(event);
 		this.props.onRowClick && this.props.onRowClick(event);
 	},
+	__validateColumn: function (column, index){
+		if(column.validate === false) {
+			return false;
+		}
+		if(zn.is(column.validate, 'function')) {
+			var _return = column.validate.apply(null, [column, index]);
+			if(_return === false) {
+				return false
+			}
+		}
+	},
 	__cellRender: function (column, index){
+		if(this.__validateColumn(column, index) === false){
+			return null;
+		}
 		if(!zn.is(column, 'object')) { return null;}
 		var _props = zn.extend({
 			column: column,

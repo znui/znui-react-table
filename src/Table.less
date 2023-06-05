@@ -7,19 +7,8 @@
     flex-direction: column;
     overflow: hidden;
     box-sizing: border-box;
-    border: 1px solid #e6e6e6;
+    /*border: 1px solid #e6e6e6;*/
     border-radius: 3px;
-    .data-loading{
-        position: absolute;
-        text-align: center;
-        width: 96%;
-        padding: 20px 0px;
-        font-size: 14px;
-        color: #666666;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
     .fixed-layout-header{
         width: 100%;
         z-index: 2;
@@ -31,6 +20,7 @@
         overflow: auto !important;
         background-color: #fff;
         margin-top: -1px;
+        min-height: 80px !important;
     }
     .fixed-layout-footer{
         width: 100%;
@@ -46,5 +36,19 @@
     border-spacing: 0;
     &[data-fixed="true"]{
         table-layout: fixed;
+    }
+    .tbody-loader{
+        height: 80px;
+    }
+    .data-loading{
+        position: absolute;
+        text-align: center;
+        width: 96%;
+        padding-bottom: 30px;
+        font-size: 14px;
+        color: #666666;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }

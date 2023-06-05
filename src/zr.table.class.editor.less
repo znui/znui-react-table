@@ -81,14 +81,39 @@
             white-space: nowrap;
             text-overflow: ellipsis;
             vertical-align: middle;
-            .zr-input, input, select, textarea {
+            .zr-input, input {
                 width: 100%;
-                height: 33px;
-                line-height: 33px;
+                height: 34px;
+                line-height: 28px;
                 border: none;
                 background-color: transparent !important;
                 &:focus{
-                    background-color: #f7f1f0 !important;
+                    background-color: #fbfbfb !important;
+                    /*background-color: #f7f1f0 !important;*/
+                }
+            }
+            textarea {
+                width: 100%;
+                height: 24px;
+                line-height: 24px;
+                border: none;
+                background-color: transparent !important;
+                &:focus{
+                    background-color: #fbfbfb !important;
+                    /*background-color: #f7f1f0 !important;*/
+                }
+            }
+            select {
+                width: 100%;
+                height: 34px;
+                border: none !important;
+                background-color: transparent !important;
+                &:focus{
+                    background-color: #fbfbfb !important;
+                    /*background-color: #f7f1f0 !important;*/
+                }
+                &:active{
+                    border: none !important;
                 }
             }
             &.text-align-right{

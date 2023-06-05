@@ -22,6 +22,8 @@ module.exports = React.createClass({
   displayName: 'ZRTable',
   getDefaultProps: function getDefaultProps() {
     return {
+      border: true,
+      resetCheckeds: false,
       fixedLayout: false,
       loadingEnabled: true,
       dataIndexEnabled: false,
@@ -142,9 +144,11 @@ module.exports = React.createClass({
     }));
   },
   __tbodyLoadingRender: function __tbodyLoadingRender(columns) {
-    return /*#__PURE__*/React.createElement("div", {
+    return /*#__PURE__*/React.createElement("tbody", {
+      className: "tbody-loader"
+    }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
       className: "data-loading"
-    }, /*#__PURE__*/React.createElement("span", null, "\u52A0\u8F7D\u4E2D"), /*#__PURE__*/React.createElement(Loading, null));
+    }, /*#__PURE__*/React.createElement("span", null, "\u52A0\u8F7D\u4E2D"), /*#__PURE__*/React.createElement(Loading, null)))));
     return /*#__PURE__*/React.createElement(table.TBody, _extends({
       rowKey: this.props.rowKey,
       row: this.props.row,
@@ -179,16 +183,23 @@ module.exports = React.createClass({
     this.data = data;
     this.props.onDataCreated && this.props.onDataCreated(data, this, lifycycle);
   },
-  refresh: function refresh(callback) {
-    this.setState({
-      checkeds: []
-    });
-
-    if (this.data) {
-      this.data.refresh();
+  refresh: function refresh(callback, reset) {
+    if (this.props.resetChecked || reset) {
+      this.setState({
+        checkeds: []
+      });
     }
 
-    callback && callback();
+    if (this.data) {
+      this.data.refresh(null, {
+        after: function after(sender, data, response, xhr) {
+          callback && callback(data, response, xhr);
+        }
+      });
+    } else {
+      callback && callback();
+    }
+
     return this;
   },
   refreshHeaders: function refreshHeaders() {
@@ -258,8 +269,15 @@ module.exports = React.createClass({
     });
 
     if (this.props.fixedLayout) {
+      var _style = {};
+
+      if (this.props.border) {
+        _style.border = '1px solid #e6e6e6';
+      }
+
       return /*#__PURE__*/React.createElement("div", {
-        className: "zr-table-fixed-layout"
+        className: "zr-table-fixed-layout",
+        style: _style
       }, /*#__PURE__*/React.createElement("div", {
         className: "fixed-layout-header",
         ref: function ref(_ref) {
@@ -322,11 +340,18 @@ module.exports = React.createClass({
       }))), this.props.childrenRender && this.props.childrenRender(columns, this), this.props.children));
     }
 
+    var _style = {};
+    /*
+    if(this.props.border) {
+    	_style.border = '1px solid #e6e6e6';
+    }
+    */
+
     return /*#__PURE__*/React.createElement("table", _extends({
       className: znui.react.classname("zr-table", this.props.className),
       style: znui.react.style(this.props.style, {
         width: this.props.width
-      }),
+      }, _style),
       "data-fixed": this.props.fixed,
       cellPadding: this.props.cellPadding || 0,
       cellSpacing: this.props.cellSpacing || 0

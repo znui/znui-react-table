@@ -17,10 +17,10 @@ module.exports = React.createClass({
   },
   __onFilterChange: function __onFilterChange(event, input, filterField) {
     if (event.name && event.opt) {
-      if (event.value === null || event.value === undefined) {
+      if (event.value === null || event.value === undefined || event.value === '') {
         this.state.data[event.name] = null;
         delete this.state.data[event.name];
-      } else if (!event.value && !input.props.emptyValueEnabled) {
+      } else if (!event.value && input && input.props && !input.props.emptyValueEnabled) {
         this.state.data[event.name] = null;
         delete this.state.data[event.name];
       } else {
@@ -39,7 +39,24 @@ module.exports = React.createClass({
       delete this.state.data[name];
     }
   },
+  __validateColumn: function __validateColumn(column, index) {
+    if (column.validate === false) {
+      return false;
+    }
+
+    if (zn.is(column.validate, 'function')) {
+      var _return = column.validate.apply(null, [column, index]);
+
+      if (_return === false) {
+        return false;
+      }
+    }
+  },
   __renderCell: function __renderCell(column, index) {
+    if (this.__validateColumn(column, index) === false) {
+      return null;
+    }
+
     if (!zn.is(column, 'object')) {
       return null;
     }

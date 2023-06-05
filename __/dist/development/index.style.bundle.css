@@ -328,19 +328,8 @@
   flex-direction: column;
   overflow: hidden;
   box-sizing: border-box;
-  border: 1px solid #e6e6e6;
+  /*border: 1px solid #e6e6e6;*/
   border-radius: 3px;
-}
-.zr-table-fixed-layout .data-loading {
-  position: absolute;
-  text-align: center;
-  width: 96%;
-  padding: 20px 0px;
-  font-size: 14px;
-  color: #666666;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 .zr-table-fixed-layout .fixed-layout-header {
   width: 100%;
@@ -353,6 +342,7 @@
   overflow: auto !important;
   background-color: #fff;
   margin-top: -1px;
+  min-height: 80px !important;
 }
 .zr-table-fixed-layout .fixed-layout-footer {
   width: 100%;
@@ -368,6 +358,20 @@
 }
 .zr-table[data-fixed="true"] {
   table-layout: fixed;
+}
+.zr-table .tbody-loader {
+  height: 80px;
+}
+.zr-table .data-loading {
+  position: absolute;
+  text-align: center;
+  width: 96%;
+  padding-bottom: 30px;
+  font-size: 14px;
+  color: #666666;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .zr-table-editor {
   border-collapse: collapse;
@@ -388,6 +392,7 @@
   background-color: #FFF;
   border-collapse: collapse;
   border-bottom: 1px solid #e6e6e6;
+  width: 100%;
   /*box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);*/
 }
 .zr-table-class-normal .zr-table-thead {
@@ -559,26 +564,48 @@
 .zr-table-class-editor .zr-table-trow > th .zr-input,
 .zr-table-class-editor .zr-table-trow > td .zr-input,
 .zr-table-class-editor .zr-table-trow > th input,
-.zr-table-class-editor .zr-table-trow > td input,
-.zr-table-class-editor .zr-table-trow > th select,
-.zr-table-class-editor .zr-table-trow > td select,
-.zr-table-class-editor .zr-table-trow > th textarea,
-.zr-table-class-editor .zr-table-trow > td textarea {
+.zr-table-class-editor .zr-table-trow > td input {
   width: 100%;
-  height: 33px;
-  line-height: 33px;
+  height: 34px;
+  line-height: 28px;
   border: none;
   background-color: transparent !important;
 }
 .zr-table-class-editor .zr-table-trow > th .zr-input:focus,
 .zr-table-class-editor .zr-table-trow > td .zr-input:focus,
 .zr-table-class-editor .zr-table-trow > th input:focus,
-.zr-table-class-editor .zr-table-trow > td input:focus,
-.zr-table-class-editor .zr-table-trow > th select:focus,
-.zr-table-class-editor .zr-table-trow > td select:focus,
+.zr-table-class-editor .zr-table-trow > td input:focus {
+  background-color: #fbfbfb !important;
+  /*background-color: #f7f1f0 !important;*/
+}
+.zr-table-class-editor .zr-table-trow > th textarea,
+.zr-table-class-editor .zr-table-trow > td textarea {
+  width: 100%;
+  height: 24px;
+  line-height: 24px;
+  border: none;
+  background-color: transparent !important;
+}
 .zr-table-class-editor .zr-table-trow > th textarea:focus,
 .zr-table-class-editor .zr-table-trow > td textarea:focus {
-  background-color: #f7f1f0 !important;
+  background-color: #fbfbfb !important;
+  /*background-color: #f7f1f0 !important;*/
+}
+.zr-table-class-editor .zr-table-trow > th select,
+.zr-table-class-editor .zr-table-trow > td select {
+  width: 100%;
+  height: 34px;
+  border: none !important;
+  background-color: transparent !important;
+}
+.zr-table-class-editor .zr-table-trow > th select:focus,
+.zr-table-class-editor .zr-table-trow > td select:focus {
+  background-color: #fbfbfb !important;
+  /*background-color: #f7f1f0 !important;*/
+}
+.zr-table-class-editor .zr-table-trow > th select:active,
+.zr-table-class-editor .zr-table-trow > td select:active {
+  border: none !important;
 }
 .zr-table-class-editor .zr-table-trow > th.text-align-right,
 .zr-table-class-editor .zr-table-trow > td.text-align-right {

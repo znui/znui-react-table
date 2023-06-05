@@ -7,6 +7,8 @@ module.exports = React.createClass({
 	displayName:'ZRTable',
 	getDefaultProps: function (){
 		return {
+			border: true,
+			resetCheckeds: false,
 			fixedLayout: false,
 			loadingEnabled: true,
 			dataIndexEnabled: false,
@@ -97,10 +99,16 @@ module.exports = React.createClass({
 	},
 	__tbodyLoadingRender: function (columns){
 		return (
-			<div className='data-loading'>
-				<span>加载中</span>
-				<Loading />
-			</div>
+			<tbody className='tbody-loader'>
+				<tr>
+					<td>
+						<div className='data-loading'>
+							<span>加载中</span>
+							<Loading />
+						</div>
+					</td>
+				</tr>
+			</tbody>
 		);
 		return <table.TBody rowKey={this.props.rowKey} row={this.props.row} context={this.props.context} {...this.props.tbody} columns={columns} fixedColumns={this.props.fixedColumns} loading={true} table={this} />;
 	},
@@ -123,14 +131,22 @@ module.exports = React.createClass({
 		this.data = data;
 		this.props.onDataCreated && this.props.onDataCreated(data, this, lifycycle);
 	},
-	refresh: function (callback){
-		this.setState({
-			checkeds: []
-		});
-		if(this.data){
-			this.data.refresh();
+	refresh: function (callback, reset){
+		if(this.props.resetChecked || reset) {
+			this.setState({
+				checkeds: []
+			});
 		}
-		callback && callback();
+
+		if(this.data){
+			this.data.refresh(null, {
+				after: (sender, data, response, xhr)=>{ 
+					callback && callback(data, response, xhr);
+				}
+			});
+		}else{
+			callback && callback();
+		}
 
 		return this;
 	},
@@ -182,8 +198,12 @@ module.exports = React.createClass({
 			return item;
 		});
 		if(this.props.fixedLayout) {
+			var _style = {};
+			if(this.props.border) {
+				_style.border = '1px solid #e6e6e6';
+			}
 			return (
-				<div className="zr-table-fixed-layout">
+				<div className="zr-table-fixed-layout" style={_style}>
 					<div className="fixed-layout-header" ref={(ref)=>this._layoutHeader = ref}>
 						<table className={znui.react.classname("zr-table", this.props.className)} 
 							style={znui.react.style(this.props.style, { width: this.props.width })} 
@@ -218,9 +238,16 @@ module.exports = React.createClass({
 			);
 		}
 
+		var _style = {};
+		/*
+		if(this.props.border) {
+			_style.border = '1px solid #e6e6e6';
+		}
+		*/
+
 		return (
 			<table className={znui.react.classname("zr-table", this.props.className)} 
-				style={znui.react.style(this.props.style, { width: this.props.width })} 
+				style={znui.react.style(this.props.style, { width: this.props.width }, _style)} 
 				data-fixed={this.props.fixed} 	
 				cellPadding={this.props.cellPadding || 0} 
 				cellSpacing={this.props.cellSpacing || 0} {...this.props.attrs}>
