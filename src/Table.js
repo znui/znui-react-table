@@ -69,6 +69,12 @@ module.exports = React.createClass({
 			}
 		}
 	},
+	__onFilterChange: function (evt, data){
+		var _return = this.props.onFilterFieldChange && this.props.onFilterFieldChange(evt, data, this);
+		if(_return === false) {
+			return false;
+		}
+	},
 	__onFilter: function (filters){
 		var _return = this.props.onFilterChange && this.props.onFilterChange(filters, this.state.data, this);
 		if(_return !== false){
@@ -213,7 +219,7 @@ module.exports = React.createClass({
 							{ !!this.props.caption && <caption className={this.props.caption.className} style={this.props.caption.style}>{this.props.caption.render}</caption> }
 							{ !!this.props.colgroup && <table.Colgroup context={this.props.context} keyMapping={this.props.keyMapping} columns={columns} {...this.props.colgroup} /> }
 							{ !!this.props.thead && <table.THead context={this.props.context} onSort={this.__onSort} onColumnChange={this.__onTHeadColumnChange} columns={columns} keyMapping={this.props.keyMapping} {...this.props.thead} table={this} />}
-							{ !!this.props.tfilter && <table.TFilter context={this.props.context} onFilter={this.__onFilter} columns={columns} {...this.props.tfilter} table={this} />}
+							{ !!this.props.tfilter && <table.TFilter context={this.props.context} onFilterChange={this.__onFilterChange} onFilter={this.__onFilter} columns={columns} {...this.props.tfilter} table={this} />}
 						</table>
 					</div>
 					<div className="fixed-layout-body" onScroll={this.__onFixedLayoutBodyScroll}>

@@ -1,9 +1,7 @@
 "use strict";
 
 var React = znui.React || require('react');
-
 var Checkbox = require('znui-react-selector').Checkbox;
-
 module.exports = React.createClass({
   displayName: 'ZRTCellCheckbox',
   getInitialState: function getInitialState() {
@@ -13,7 +11,6 @@ module.exports = React.createClass({
   },
   __onCheckboxChange: function __onCheckboxChange(event) {
     event.stopPropagation();
-
     if (this.props.thead) {
       this.__onHeadChange(event);
     } else if (this.props.tbody) {

@@ -1,13 +1,9 @@
 "use strict";
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 var React = znui.React || require('react');
-
 var TablePager = require('./TablePager');
-
 var selector = require('znui-react-selector');
-
 module.exports = React.createClass({
   displayName: 'ZRPopupTable',
   getDefaultProps: function getDefaultProps() {
@@ -50,7 +46,6 @@ module.exports = React.createClass({
   },
   __popupRender: function __popupRender(dropdownEvent) {
     var _this = this;
-
     return /*#__PURE__*/React.createElement(TablePager, _extends({
       zxnz: true,
       colgroup: {},

@@ -1,35 +1,24 @@
 "use strict";
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 var React = znui.React || require('react');
-
 var TRow = require('./TRow');
-
 var loader = require('znui-react-loader');
-
 module.exports = React.createClass({
   displayName: 'ZRTBody',
   getInitialState: function getInitialState() {
     var _pageSize = this.props.pageSize || 50;
-
     var _columnKeyMap = {},
-        _default = {};
-
+      _default = {};
     var _iterator = _createForOfIteratorHelper(this.props.columns),
-        _step;
-
+      _step;
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var column = _step.value;
         _columnKeyMap[column.name] = column;
-
         if (column.value !== null && column.value !== undefined) {
           _default[column.name] = column.value;
         }
@@ -39,7 +28,6 @@ module.exports = React.createClass({
     } finally {
       _iterator.f();
     }
-
     return {
       active: null,
       checkeds: [],
@@ -54,12 +42,10 @@ module.exports = React.createClass({
   },
   componentDidMount: function componentDidMount() {
     var _iterator2 = _createForOfIteratorHelper(this.props.data),
-        _step2;
-
+      _step2;
     try {
       for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
         var item = _step2.value;
-
         this.__initialDataItem(item);
       }
     } catch (err) {
@@ -70,15 +56,12 @@ module.exports = React.createClass({
   },
   __initialDataItem: function __initialDataItem(data) {
     var _default = this.state["default"],
-        _columnKeyMap = this.state.columnKeyMap,
-        _value = null;
-
+      _columnKeyMap = this.state.columnKeyMap,
+      _value = null;
     for (var key in _default) {
       _value = _default[key];
-
       if (typeof _value == 'string' && _value.indexOf('{') != -1 && _value.indexOf('}') != -1) {
         _value = _value.format(data || {});
-
         if (_columnKeyMap[key]) {
           switch (_columnKeyMap[key].dataType) {
             case 'Number':
@@ -90,49 +73,39 @@ module.exports = React.createClass({
                   zn.error(err);
                 }
               }
-
               break;
-
             case 'Price':
               _value = znui.react.stringifyPrice(_value);
               break;
           }
         }
-
         data[key] = _value;
       }
-
       if (data[key] == null) {
         data[key] = _value;
       }
     }
-
     return data;
   },
   __getData: function __getData(pageIndex, pageSize) {
     var _pageIndex = pageIndex || this.state.pageIndex;
-
     var _pageSize = pageSize || this.state.pageSize;
-
     return this.props.data.slice((_pageIndex - 1) * _pageSize, Math.min(_pageIndex * _pageSize, this.props.data.length));
   },
   __renderLoading: function __renderLoading() {
     var _element = znui.react.createReactElement(this.props.loadingRender, {
       tbody: this
     }, this.props.context);
-
     if (!_element) {
       _element = /*#__PURE__*/React.createElement(loader.DataLoader, {
         loader: "wave",
         title: 'Loading...'
       });
     }
-
     var _loading = zn.extend({
       className: '',
       style: {}
     }, this.props.loading);
-
     return /*#__PURE__*/React.createElement("tr", {
       className: znui.react.classname("tbody-loading", _loading.className),
       style: _loading.style
@@ -144,7 +117,6 @@ module.exports = React.createClass({
     var _element = znui.react.createReactElement(this.props.emptyRender, {
       tbody: this
     }, this.props.context);
-
     if (!_element) {
       _element = /*#__PURE__*/React.createElement("div", {
         className: "empty-content"
@@ -162,12 +134,10 @@ module.exports = React.createClass({
         d: "M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"
       })), /*#__PURE__*/React.createElement("span", null, "Empty"));
     }
-
     var _empty = zn.extend({
       className: '',
       style: {}
     }, this.props.empty);
-
     return /*#__PURE__*/React.createElement("tr", {
       className: znui.react.classname("tbody-empty", _empty.className),
       style: _empty.style
@@ -191,27 +161,20 @@ module.exports = React.createClass({
     if (!zn.is(item, 'object')) {
       return null;
     }
-
     var _temp = this.props.eachRowData && this.props.eachRowData(item, index, this);
-
     if (_temp && zn.is(_temp, 'object')) {
       item = _temp;
     }
-
     var _element = znui.react.createReactElement(this.props.rowRender, {
       data: item,
       rowIndex: index,
       tbody: this
     }, this.props.context);
-
     if (_element) {
       return _element;
     }
-
     var _rowKey = this.props.rowKey;
-
     var _key = item[_rowKey] || index;
-
     return /*#__PURE__*/React.createElement(TRow, _extends({
       key: _key + '-' + index,
       rowIndex: index
@@ -236,15 +199,12 @@ module.exports = React.createClass({
   },
   __pagesRender: function __pagesRender() {
     var _this = this;
-
     var _pageCount = Math.ceil(this.props.data.length / this.state.pageSize),
-        _pages = [];
-
+      _pages = [];
     if (_pageCount > 1) {
       for (var i = 1; i < _pageCount + 1; i++) {
         _pages.push(i);
       }
-
       return /*#__PURE__*/React.createElement("tr", {
         className: znui.react.classname("tbody-pages", '')
       }, /*#__PURE__*/React.createElement("td", {
@@ -270,13 +230,10 @@ module.exports = React.createClass({
     if (this.props.data == null || this.props.data && !this.props.data.length) {
       return this.__renderEmpty();
     }
-
     var _pageCount = Math.ceil(this.props.data.length / this.state.pageSize);
-
     if (_pageCount > 1) {
       return /*#__PURE__*/React.createElement(React.Fragment, null, this.__pagesRender(), this.__getData(this.state.pageIndex, this.state.pageSize).map(this.__renderRow));
     }
-
     return /*#__PURE__*/React.createElement(React.Fragment, null, this.props.data.map(this.__renderRow));
   },
   __render: function __render() {

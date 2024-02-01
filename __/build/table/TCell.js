@@ -1,9 +1,7 @@
 "use strict";
 
 var React = znui.React || require('react');
-
 var ReactDOM = znui.ReactDOM || require('react-dom');
-
 module.exports = React.createClass({
   displayName: 'ZRTCell',
   getInitialState: function getInitialState() {
@@ -19,13 +17,10 @@ module.exports = React.createClass({
     if (this.props.children) {
       return this.props.children;
     }
-
     var _value = null;
-
     if (this.props.data && this.props.name) {
       _value = this.props.data[this.props.name];
     }
-
     var _render = znui.react.createReactElement(this.props.render || this.props.body, {
       rowIndex: this.props.rowIndex,
       cellIndex: this.props.cellIndex,
@@ -37,11 +32,9 @@ module.exports = React.createClass({
       tbody: this.props.tbody,
       table: this.props.tbody.props.table
     }, this.props.context);
-
     if (_render) {
       return _render;
     }
-
     return /*#__PURE__*/React.createElement("div", {
       className: "cell-label",
       title: _value
@@ -49,7 +42,6 @@ module.exports = React.createClass({
   },
   __cellClick: function __cellClick(event) {
     var _this = this;
-
     event.data = {
       findTDDOM: function findTDDOM() {
         return ReactDOM.findDOMNode(_this);
@@ -61,7 +53,6 @@ module.exports = React.createClass({
   },
   render: function render() {
     var _column = this.props.column || {};
-
     return /*#__PURE__*/React.createElement("td", {
       className: znui.react.classname("zr-table-tcell", _column.fixed ? 'fixed' : '', this.props.className, _column.bodyClassName, this.state.className),
       style: znui.react.style(this.props.style, _column.bodyStyle, this.state.style, _column.fixedStyles),

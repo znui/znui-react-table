@@ -25,6 +25,13 @@ module.exports = React.createClass({
 				};
 			}
 		}
+		this.props.onFilterChange && this.props.onFilterChange(event, {
+			name: event.name,
+			opt: event.opt,
+			input: input, 
+			filterField: filterField,
+			data: this.state.data
+		});
 		this.props.onFilter && this.props.onFilter(this.state.data);
 	},
 	__onFilterCancel: function (name){
