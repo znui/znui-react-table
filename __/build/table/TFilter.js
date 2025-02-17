@@ -1,6 +1,6 @@
 "use strict";
 
-function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 var React = znui.React || require('react');
 var filter = require('znui-react-filter');
 module.exports = React.createClass({
@@ -54,6 +54,18 @@ module.exports = React.createClass({
     }
   },
   __renderCell: function __renderCell(column, index) {
+    if (column.name == "__index__") {
+      return /*#__PURE__*/React.createElement("td", {
+        key: index,
+        className: znui.react.classname('tfilter-cell', column.fixed ? 'fixed' : ''),
+        style: znui.react.style(column.fixedStyles)
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "icon-btn"
+      }, /*#__PURE__*/React.createElement("i", {
+        "data-tooltip": true,
+        className: "fa fa-filter"
+      })));
+    }
     if (this.__validateColumn(column, index) === false) {
       return null;
     }

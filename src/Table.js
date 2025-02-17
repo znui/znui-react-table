@@ -220,6 +220,7 @@ module.exports = React.createClass({
 							{ !!this.props.colgroup && <table.Colgroup context={this.props.context} keyMapping={this.props.keyMapping} columns={columns} {...this.props.colgroup} /> }
 							{ !!this.props.thead && <table.THead context={this.props.context} onSort={this.__onSort} onColumnChange={this.__onTHeadColumnChange} columns={columns} keyMapping={this.props.keyMapping} {...this.props.thead} table={this} />}
 							{ !!this.props.tfilter && <table.TFilter context={this.props.context} onFilterChange={this.__onFilterChange} onFilter={this.__onFilter} columns={columns} {...this.props.tfilter} table={this} />}
+							{ !!this.props.trowadder && <table.TRowAdder context={this.props.context} onAddSubmit={this.__onAddSubmit} onInputChange={this.__onAddInputChange} columns={columns} {...this.props.trowadder} table={this} />}
 						</table>
 					</div>
 					<div className="fixed-layout-body" onScroll={this.__onFixedLayoutBodyScroll}>

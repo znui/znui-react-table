@@ -52,6 +52,15 @@ module.exports = React.createClass({
 		}
 	},
 	__renderCell: function (column, index){
+		if(column.name == "__index__")  {
+			return (
+				<td key={index} className={znui.react.classname('tfilter-cell', (column.fixed?'fixed':''))} style={znui.react.style(column.fixedStyles)}>
+					<div className='icon-btn'>
+						<i data-tooltip className='fa fa-filter' />
+					</div>
+				</td>
+			);
+		}
 		if(this.__validateColumn(column, index) === false){
 			return null;
 		}
